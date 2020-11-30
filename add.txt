@@ -1,0 +1,3 @@
+#source.url=jdbc:postgresql://ec2-54-228-250-82.eu-west-1.compute.amazonaws.com:5432/d5ohu8adb56b1e
+#spring.datasource.username=jujmyhzgiifvew
+#spring.datasource.password=ec09aacbe064c7d3cb3256909de447228b920d255bb88a5c69223753afc2f089
