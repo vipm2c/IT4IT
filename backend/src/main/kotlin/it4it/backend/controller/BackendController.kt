@@ -2,7 +2,7 @@ package it4it.backend.controller
 
 import org.springframework.web.bind.annotation.*
 import it4it.backend.model.Greeting
-import it4it.backend.user.UserRepository
+import it4it.backend.repository.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
 import java.util.concurrent.atomic.AtomicLong
 
@@ -13,6 +13,7 @@ import java.util.concurrent.atomic.AtomicLong
 class BackendController() {
 
     val counter = AtomicLong()
+
     @Autowired
     lateinit var userRepository: UserRepository
 

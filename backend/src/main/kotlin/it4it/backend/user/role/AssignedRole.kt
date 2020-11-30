@@ -12,24 +12,15 @@ class AssignedRole (
         @GeneratedValue(strategy = GenerationType.AUTO)
         val id: Long,
 
-        @OneToOne(fetch = FetchType.EAGER)
-        @JoinTable(
-                name = "role",
-                joinColumns = [JoinColumn(name = "role", referencedColumnName = "id")]
-        )
+        @OneToOne(cascade = [CascadeType.ALL])
+        @JoinColumn(name = "role",referencedColumnName = "id")
         val role: Role?,
 
-        @OneToOne(fetch = FetchType.EAGER)
-        @JoinTable(
-                name = "users",
-                joinColumns = [JoinColumn(name = "user", referencedColumnName = "id")]
-        )
+        @OneToOne(cascade = [CascadeType.ALL])
+        @JoinColumn(name = "user",referencedColumnName = "id")
         val user: User?,
 
-        @OneToOne(fetch = FetchType.EAGER)
-        @JoinTable(
-                name = "project",
-                joinColumns = [JoinColumn(name = "project", referencedColumnName = "id")]
-        )
+        @OneToOne(cascade = [CascadeType.ALL])
+        @JoinColumn(name = "project",referencedColumnName = "id")
         val project: Project?
 )

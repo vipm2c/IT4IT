@@ -17,11 +17,8 @@ class Release (
         @Column(nullable = true)
         val description: String?,
 
-        @OneToOne(fetch = FetchType.EAGER)
-        @JoinTable(
-                name = "project",
-                joinColumns = [JoinColumn(name = "project", referencedColumnName = "id")]
-        )
+        @OneToOne(cascade = [CascadeType.ALL])
+        @JoinColumn(name = "project", referencedColumnName = "id")
         val project: Project?,
 
         @Column(nullable = true)

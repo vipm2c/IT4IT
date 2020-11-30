@@ -6,5 +6,4 @@ import org.springframework.stereotype.Repository
 @Repository
 interface RoleRepository: CrudRepository<Role, Long> {
 
-
 }

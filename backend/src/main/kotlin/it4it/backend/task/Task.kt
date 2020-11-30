@@ -12,11 +12,8 @@ class Task (
         @GeneratedValue(strategy = GenerationType.AUTO)
         val id: Long,
 
-        @OneToOne(fetch = FetchType.EAGER)
-        @JoinTable(
-                name = "project",
-                joinColumns = [JoinColumn(name = "project", referencedColumnName = "id")]
-        )
+        @OneToOne(cascade = [CascadeType.ALL])
+        @JoinColumn(name = "project", referencedColumnName = "id")
         val project: Project?,
 
         @Column(nullable = true)
@@ -25,41 +22,26 @@ class Task (
         @Column(nullable = true)
         val description: String?,
 
-        @OneToOne(fetch = FetchType.EAGER)
-        @JoinTable(
-                name = "release",
-                joinColumns = [JoinColumn(name = "fix_version", referencedColumnName = "id")]
-        )
+        @OneToOne(cascade = [CascadeType.ALL])
+        @JoinColumn(name = "fix_version", referencedColumnName = "id")
         val fixVersion: Release?,
 
         @Column(nullable = true)
         val key: String?,
 
-        @OneToOne(fetch = FetchType.EAGER)
-        @JoinTable(
-                name = "taskstatus",
-                joinColumns = [JoinColumn(name = "status", referencedColumnName = "id")]
-        )
+        @OneToOne(cascade = [CascadeType.ALL])
+        @JoinColumn(name = "status", referencedColumnName = "id")
         val status: TaskStatus?,
 
-        @OneToOne(fetch = FetchType.EAGER)
-        @JoinTable(
-                name = "users",
-                joinColumns = [JoinColumn(name = "assignee", referencedColumnName = "id")]
-        )
+        @OneToOne(cascade = [CascadeType.ALL])
+        @JoinColumn(name = "assignee", referencedColumnName = "id")
         val assignee: User?,
 
-        @OneToOne(fetch = FetchType.EAGER)
-        @JoinTable(
-                name = "users",
-                joinColumns = [JoinColumn(name = "reporter", referencedColumnName = "id")]
-        )
+        @OneToOne(cascade = [CascadeType.ALL])
+        @JoinColumn(name = "reporter", referencedColumnName = "id")
         val reporter: User?,
 
-        @OneToOne(fetch = FetchType.EAGER)
-        @JoinTable(
-                name = "release",
-                joinColumns = [JoinColumn(name = "affected_version", referencedColumnName = "id")]
-        )
+        @OneToOne(cascade = [CascadeType.ALL])
+        @JoinColumn(name = "affected_version", referencedColumnName = "id")
         val affectedVersion: Release?
 )

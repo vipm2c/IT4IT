@@ -11,24 +11,15 @@ class Link (
         @GeneratedValue(strategy = GenerationType.AUTO)
         val id: Long,
 
-        @OneToOne(fetch = FetchType.EAGER)
-        @JoinTable(
-                name = "linktype",
-                joinColumns = [JoinColumn(name = "link_type", referencedColumnName = "id")]
-        )
+        @OneToOne(cascade = [CascadeType.ALL])
+        @JoinColumn(name = "link_type", referencedColumnName = "id")
         val linkType: LinkType?,
 
-        @OneToOne(fetch = FetchType.EAGER)
-        @JoinTable(
-                name = "task",
-                joinColumns = [JoinColumn(name = "inward", referencedColumnName = "id")]
-        )
+        @OneToOne(cascade = [CascadeType.ALL])
+        @JoinColumn(name = "inward", referencedColumnName = "id")
         val inward: Task?,
 
-        @OneToOne(fetch = FetchType.EAGER)
-        @JoinTable(
-                name = "task",
-                joinColumns = [JoinColumn(name = "outward", referencedColumnName = "id")]
-        )
+        @OneToOne(cascade = [CascadeType.ALL])
+        @JoinColumn(name = "outward", referencedColumnName = "id")
         val outward: Task?
 )
