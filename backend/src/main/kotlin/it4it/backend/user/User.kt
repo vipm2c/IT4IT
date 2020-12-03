@@ -23,8 +23,8 @@ data class User(
         val credential: String?,
 
         @Column(nullable = true)
-        val active: Boolean?,
+        val active: Boolean,
 
         @Column(nullable = true)
-        val admin: Boolean?
+        val admin: Boolean
 )
