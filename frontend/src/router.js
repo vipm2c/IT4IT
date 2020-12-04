@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import HelloWorld from '@/components/HelloWorld'
-import Greeting from '@/components/Greeting'
 import Home from '@/components/Home'
 import SignIn from '@/components/SignIn'
 import SignUp from '@/components/SignUp'
@@ -11,22 +10,17 @@ import AdminPage from '@/components/AdminPage'
 Vue.use(Router)
 
 export default new Router({
-    mode: 'history',
+    mode: 'hash',
     routes: [
         {
             path: '/',
-            name: 'Greeting',
-            component: Greeting
+            name: 'Home',
+            component: Home
         },
         {
             path: '/hello-world',
             name: 'HelloWorld',
             component: HelloWorld
-        },
-        {
-            path: '/home',
-            name: 'Home',
-            component: Home
         },
         {
             path: '/login',

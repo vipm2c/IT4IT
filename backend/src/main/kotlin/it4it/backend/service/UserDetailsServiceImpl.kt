@@ -21,14 +21,13 @@ class UserDetailsServiceImpl: UserDetailsService{
         val user = p0?.let { userRepository.findByUsername(it).get() }
                 ?: throw UsernameNotFoundException("User'$p0' not found")
 
-        lateinit var roles : List<String>
-        roles.plus("USER")
+        val userRole = SimpleGrantedAuthority("ROLE_USER")
+        val userRoles = mutableListOf(userRole)
         if (user.admin){
-            roles.plus("ADMIN")
-
+            val adminRole = SimpleGrantedAuthority("ROLE_ADMIN")
+            userRoles.add(adminRole)
         }
-
-        val authorities: List<GrantedAuthority> = roles.stream().map { role -> SimpleGrantedAuthority(role) }.collect(Collectors.toList<GrantedAuthority>())
+        val authorities: List<GrantedAuthority> = userRoles.toList<GrantedAuthority>()
 
         return org.springframework.security.core.userdetails.User
                 .withUsername(p0)
@@ -37,7 +36,7 @@ class UserDetailsServiceImpl: UserDetailsService{
                 .accountExpired(false)
                 .accountLocked(false)
                 .credentialsExpired(false)
-                .disabled(user.active)
+                .disabled(!user.active)
                 .build()
     }
 

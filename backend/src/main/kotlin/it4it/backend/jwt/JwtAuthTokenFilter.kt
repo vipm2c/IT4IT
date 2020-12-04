@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse
 
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
@@ -24,6 +25,9 @@ class JwtAuthTokenFilter : OncePerRequestFilter() {
 
     @Autowired
     private val userDetailsService: UserDetailsServiceImpl? = null
+
+    @Value("\${ksvg.app.authCookieName}")
+    lateinit var authCookieName: String
 
     @Throws(ServletException::class, IOException::class)
     override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, filterChain: FilterChain) {
@@ -48,11 +52,12 @@ class JwtAuthTokenFilter : OncePerRequestFilter() {
     }
 
     private fun getJwt(request: HttpServletRequest): String? {
-        val authHeader = request.getHeader("Authorization")
-
-        return if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            authHeader.replace("Bearer ", "")
-        } else null
+        for (cookie in request.cookies) {
+            if (cookie.name == authCookieName) {
+                return cookie.value
+            }
+        }
+        return null
     }
 
     companion object {

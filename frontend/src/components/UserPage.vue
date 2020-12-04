@@ -18,10 +18,11 @@ export default {
       const header = {'Authorization': 'Bearer ' + this.$store.getters.getToken};
       AXIOS.get('/usercontent', { headers: header })
           .then(response => {
+            console.log(response.data)
             this.$data.pageContent = response.data;
           })
           .catch(error => {
-            console.log('ERROR: ' + error.response.data);
+            console.log('ERROR: ' + error.data);
           })
     }
   },

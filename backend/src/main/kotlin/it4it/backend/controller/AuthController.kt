@@ -7,7 +7,9 @@ import it4it.backend.repository.UserRepository
 import it4it.backend.user.User
 import it4it.backend.web.response.JwtResponse
 import it4it.backend.web.response.ResponseMessage
+import it4it.backend.web.response.SuccessfulSigninResponse
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.AuthenticationManager
@@ -16,9 +18,14 @@ import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.*
+import java.io.UnsupportedEncodingException
 import java.util.*
 import java.util.stream.Collectors
+import javax.servlet.http.Cookie
+import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
 import javax.validation.Valid
 
 
@@ -39,9 +46,15 @@ class AuthController() {
     @Autowired
     lateinit var jwtProvider: JwtProvider
 
+    @Value("\${ksvg.app.authCookieName}")
+    lateinit var authCookieName: String
+
+    @Value("\${ksvg.app.isCookieSecure}")
+    var isCookieSecure: Boolean = true
+
 
     @PostMapping("/signin")
-    fun authenticateUser(@Valid @RequestBody loginRequest: LoginUser): ResponseEntity<*> {
+    fun authenticateUser(@Valid @RequestBody loginRequest: LoginUser, response: HttpServletResponse): ResponseEntity<*> {
 
         val userCandidate: Optional<User> = userRepository.findByUsername(loginRequest.username!!)
 
@@ -51,14 +64,22 @@ class AuthController() {
                     UsernamePasswordAuthenticationToken(loginRequest.username, loginRequest.password))
             SecurityContextHolder.getContext().setAuthentication(authentication)
             val jwt: String = jwtProvider.generateJwtToken(user.username!!)
-            lateinit var roles : List<String>
-            roles.plus("USER")
-            if (user.admin){
-                roles.plus("ADMIN")
 
+            val cookie: Cookie = Cookie(authCookieName, jwt)
+            cookie.maxAge = jwtProvider.jwtExpiration!!
+            cookie.secure = isCookieSecure
+            cookie.isHttpOnly = true
+            cookie.path = "/"
+            response.addCookie(cookie)
+
+            val userRole = SimpleGrantedAuthority("ROLE_USER")
+            val userRoles = mutableListOf(userRole)
+            if (user.admin){
+                val adminRole = SimpleGrantedAuthority("ROLE_ADMIN")
+                userRoles.add(adminRole)
             }
-            val authorities: List<GrantedAuthority> = roles.stream().map { role -> SimpleGrantedAuthority(role) }.collect(Collectors.toList<GrantedAuthority>())
-            return ResponseEntity.ok(JwtResponse(jwt, user.username, authorities))
+            val authorities: List<GrantedAuthority> = userRoles.toList<GrantedAuthority>()
+            return ResponseEntity.ok(SuccessfulSigninResponse(user.username, authorities))
         } else {
             return ResponseEntity(ResponseMessage("User not found!"),
                     HttpStatus.BAD_REQUEST)
@@ -97,6 +118,18 @@ class AuthController() {
             return ResponseEntity(ResponseMessage("User already exists!"),
                     HttpStatus.BAD_REQUEST)
         }
+    }
+
+    @PostMapping("/logout")
+    fun logout(response: HttpServletResponse): ResponseEntity<*> {
+        val cookie: Cookie = Cookie(authCookieName, null)
+        cookie.maxAge = 0
+        cookie.secure = isCookieSecure
+        cookie.isHttpOnly = true
+        cookie.path = "/"
+        response.addCookie(cookie)
+
+        return ResponseEntity.ok(ResponseMessage("Successfully logged"))
     }
 
     private fun emailExists(email: String): Boolean {

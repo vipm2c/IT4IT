@@ -1,12 +1,27 @@
 <template>
   <div id="app">
     <b-navbar style="width: 100%" type="dark" variant="dark">
-      <b-navbar-brand id="nav-brand" href="#">IT4IT</b-navbar-brand>
-      <router-link to="/user" class="nav-link text-light" v-if="this.$store.getters.isAuthenticated">User</router-link>
-      <router-link to="/admin" class="nav-link text-light" v-if="this.$store.getters.isAuthenticated && this.$store.getters.isAdmin">Admin</router-link>
-      <router-link to="/register" class="nav-link text-light" v-if="!this.$store.getters.isAuthenticated">Register</router-link>
-      <router-link to="/login" class="nav-link text-light" v-if="!this.$store.getters.isAuthenticated">Login</router-link>
-      <a href="#" class="nav-link text-light" v-if="this.$store.getters.isAuthenticated" v-on:click="logout">Logout </a>
+      <b-navbar-brand id="nav-brand" href="/">IT4IT</b-navbar-brand>
+      <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+      <b-collapse id="nav-collapse" is-nav>
+        <b-navbar-nav>
+          <router-link to="/user" class="nav-link text-light" v-if="this.$store.getters.isAuthenticated">User</router-link>
+          <router-link to="/admin" class="nav-link text-light" v-if="this.$store.getters.isAuthenticated && this.$store.getters.isAdmin">Admin</router-link>
+        </b-navbar-nav>
+        <!-- Right aligned nav items -->
+        <b-navbar-nav class="ml-auto">
+          <router-link to="/login" class="nav-link text-light" v-if="!this.$store.getters.isAuthenticated">Login</router-link>
+          <router-link to="/register" class="nav-link text-light" v-if="this.$store.getters.isAuthenticated  && this.$store.getters.isAdmin">Register</router-link>
+          <b-nav-item-dropdown right v-if="this.$store.getters.isAuthenticated">
+            <!-- Using 'button-content' slot -->
+            <template #button-content>
+              <em>User</em>
+            </template>
+            <b-dropdown-item href="#">Profile</b-dropdown-item>
+            <b-dropdown-item href="#" v-if="this.$store.getters.isAuthenticated" v-on:click="logout">Logout</b-dropdown-item>
+          </b-nav-item-dropdown>
+        </b-navbar-nav>
+      </b-collapse>
     </b-navbar>
     <router-view></router-view>
   </div>
