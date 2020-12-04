@@ -20,10 +20,7 @@ class BackendController() {
     @Autowired
     lateinit var userRepository: UserRepository
 
-    @GetMapping("/greeting")
-    fun greeting(@RequestParam(value = "name", defaultValue = "World") name: String) =
-            Greeting(counter.incrementAndGet(), "Hello, $name")
-
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/users")
     fun users() = userRepository.findAll()
 

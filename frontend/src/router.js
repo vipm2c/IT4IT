@@ -18,11 +18,6 @@ export default new Router({
             component: Home
         },
         {
-            path: '/hello-world',
-            name: 'HelloWorld',
-            component: HelloWorld
-        },
-        {
             path: '/login',
             name: 'SignIn',
             component: SignIn

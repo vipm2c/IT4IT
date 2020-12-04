@@ -4,13 +4,13 @@
       <template slot="header">IT4IT</template>
 
       <template slot="lead">
-        This is the demo web-application written in Kotlin using Spring Boot and Vue.js for frontend
+        Это домашняя страница проекта IT4IT
       </template>
 
       <hr class="my-4" />
 
       <p v-if="!this.$store.getters.isAuthenticated">
-        Login and start
+        Необходимо залогиниться
       </p>
 
       <router-link to="/login" v-if="!this.$store.getters.isAuthenticated">
