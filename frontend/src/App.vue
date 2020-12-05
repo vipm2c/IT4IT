@@ -6,6 +6,7 @@
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav>
           <router-link to="/user" class="nav-link text-light" v-if="this.$store.getters.isAuthenticated">User</router-link>
+          <router-link to="/projects" class="nav-link text-light" v-if="this.$store.getters.isAuthenticated">Projects</router-link>
           <router-link to="/admin" class="nav-link text-light" v-if="this.$store.getters.isAuthenticated && this.$store.getters.isAdmin">Admin</router-link>
         </b-navbar-nav>
         <!-- Right aligned nav items -->

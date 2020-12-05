@@ -6,6 +6,7 @@ import SignIn from '@/components/SignIn'
 import SignUp from '@/components/SignUp'
 import UserPage from '@/components/UserPage'
 import AdminPage from '@/components/AdminPage'
+import Projects from '@/components/Projects'
 
 Vue.use(Router)
 
@@ -36,6 +37,11 @@ export default new Router({
             path: '/admin',
             name: 'AdminPage',
             component: AdminPage
+        },
+        {
+            path: '/projects',
+            name: 'Projects',
+            component: Projects
         }
     ]
 })
