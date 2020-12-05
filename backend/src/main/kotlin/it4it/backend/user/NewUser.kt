@@ -1,8 +1,7 @@
-package it4it.backend.model
+package it4it.backend.user
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.io.Serializable
-import javax.persistence.Column
 
 class NewUser : Serializable {
 

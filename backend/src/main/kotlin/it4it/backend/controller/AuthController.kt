@@ -2,10 +2,9 @@ package it4it.backend.controller
 
 import it4it.backend.jwt.JwtProvider
 import it4it.backend.model.LoginUser
-import it4it.backend.model.NewUser
-import it4it.backend.repository.UserRepository
+import it4it.backend.user.NewUser
+import it4it.backend.user.UserRepository
 import it4it.backend.user.User
-import it4it.backend.web.response.JwtResponse
 import it4it.backend.web.response.ResponseMessage
 import it4it.backend.web.response.SuccessfulSigninResponse
 import org.springframework.beans.factory.annotation.Autowired
@@ -18,13 +17,9 @@ import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.crypto.password.PasswordEncoder
-import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.*
-import java.io.UnsupportedEncodingException
 import java.util.*
-import java.util.stream.Collectors
 import javax.servlet.http.Cookie
-import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 import javax.validation.Valid
 

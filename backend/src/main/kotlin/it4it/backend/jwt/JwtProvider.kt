@@ -1,15 +1,12 @@
 package it4it.backend.jwt
 
 import io.jsonwebtoken.*
-import it4it.backend.repository.UserRepository
+import it4it.backend.user.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Component
-import org.springframework.security.core.GrantedAuthority
-import org.springframework.security.core.authority.SimpleGrantedAuthority
 import java.util.Date
 
 

@@ -11,17 +11,20 @@ class Project (
         val id: Long,
 
         @Column(nullable = true)
-        val name: String?,
+        var name: String?,
 
         @Column(nullable = true)
-        val description: String?,
+        var description: String?,
 
         @Column(nullable = true)
         val key: String?,
 
         @Column(nullable = true)
-        val spec: String?,
+        var spec: String?,
 
         @Column(nullable = true)
-        val archived: Boolean?
+        var archived: Boolean?,
+
+        @Column(nullable = true)
+        var count: Long?
 )

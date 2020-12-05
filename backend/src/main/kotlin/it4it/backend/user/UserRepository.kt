@@ -1,4 +1,4 @@
-package it4it.backend.repository
+package it4it.backend.user
 
 import it4it.backend.user.User
 import org.springframework.data.repository.CrudRepository
