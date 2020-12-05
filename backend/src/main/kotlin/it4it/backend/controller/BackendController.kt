@@ -90,9 +90,15 @@ class BackendController() {
         val projectCandidate = projectRepository.findProjectByKey(newProject.key!!)
         return if (!projectCandidate.isPresent) {
             val project = projectCandidate.get()
-            project.name = newProject.name
-            project.description = newProject.description
-            project.spec = newProject.spec
+            if (newProject.name != null && project.name != newProject.name) {
+                project.name = newProject.name
+            }
+            if (newProject.description != null && project.description != newProject.description) {
+                project.description = newProject.description
+            }
+            if (newProject.spec != null && project.spec != newProject.spec) {
+                project.spec = newProject.spec
+            }
 
             projectRepository.save(project)
 
