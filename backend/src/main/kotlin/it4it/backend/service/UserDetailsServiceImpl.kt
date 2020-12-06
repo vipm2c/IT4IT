@@ -1,6 +1,6 @@
 package it4it.backend.service
 
-import it4it.backend.user.UserRepository
+import it4it.backend.repository.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService

@@ -17,13 +17,21 @@ class NewUser : Serializable {
     @JsonProperty("credential")
     var credential: String? = null
 
+    @JsonProperty("admin")
+    var admin: Boolean = false
+
+    @JsonProperty("active")
+    var active: Boolean = true
+
     constructor(){}
 
-    constructor(name: String, username: String, email: String, credential: String){
+    constructor(name: String, username: String, email: String, credential: String, admin: Boolean, active: Boolean){
         this.name = name
         this.username = username
         this.email = email
         this.credential = credential
+        this.admin = admin
+        this.active = active
     }
 
     companion object {

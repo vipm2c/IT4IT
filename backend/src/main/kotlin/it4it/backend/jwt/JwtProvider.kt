@@ -1,7 +1,7 @@
 package it4it.backend.jwt
 
 import io.jsonwebtoken.*
-import it4it.backend.user.UserRepository
+import it4it.backend.repository.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory

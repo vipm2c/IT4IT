@@ -17,14 +17,17 @@ class NewProject : Serializable {
     @JsonProperty("spec")
     var spec: String? = null
 
+    @JsonProperty("archived")
+    var archived: Boolean = false
 
     constructor(){}
 
-    constructor(name: String, description: String, key: String, spec: String){
+    constructor(name: String, description: String, key: String, spec: String, archived: Boolean){
         this.name = name
         this.description = description
         this.key = key
         this.spec = spec
+        this.archived = archived
     }
 
     companion object {

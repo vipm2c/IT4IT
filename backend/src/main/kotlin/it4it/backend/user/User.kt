@@ -11,20 +11,21 @@ data class User(
         val id: Long,
 
         @Column(nullable = true)
-        val name: String?,
+        var name: String?,
 
         @Column(nullable = true)
-        val username: String?,
+        var username: String?,
 
         @Column(nullable = true)
-        val email: String?,
+        var email: String?,
 
         @Column(nullable = true)
-        val credential: String?,
+        var credential: String?,
 
         @Column(nullable = true)
-        val active: Boolean,
+        var active: Boolean,
 
         @Column(nullable = true)
-        val admin: Boolean
+        var admin: Boolean
+
 )

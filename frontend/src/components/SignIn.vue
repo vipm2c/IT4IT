@@ -53,8 +53,9 @@ export default {
     login() {
       AXIOS.post(`/auth/signin`, {'username': this.$data.username, 'password': this.$data.password})
           .then(response => {
+            console.log(response)
             this.$store.dispatch('login', {'token': response.data.accessToken, 'roles': response.data.authorities, 'username': response.data.username});
-            this.$router.push('/home')
+            this.$router.push('/')
           }, error => {
             this.$data.alertMessage = (error.response.data.message.length < 150) ? error.response.data.message : 'Request error. Please, report this error website owners';
             console.log(error)
