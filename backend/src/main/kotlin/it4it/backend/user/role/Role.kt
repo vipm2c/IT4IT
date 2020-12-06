@@ -8,7 +8,7 @@ class Role (
 
         @Id
         @GeneratedValue(strategy = GenerationType.AUTO)
-        val id: Long,
+        var id: Long,
 
         @Column(nullable = true)
         val name: String?
