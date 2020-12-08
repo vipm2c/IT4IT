@@ -10,4 +10,6 @@ interface ProjectRepository: CrudRepository<Project, Long> {
 
     fun findProjectByKey(@Param("projectKey") key: String): Optional<Project>
 
+    fun findProjectById(@Param("id") id: Long): Optional<Project>
+
 }

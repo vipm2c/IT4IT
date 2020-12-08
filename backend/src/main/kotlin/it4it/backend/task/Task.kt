@@ -17,31 +17,31 @@ class Task (
         val project: Project?,
 
         @Column(nullable = true)
-        val summary: String?,
+        var summary: String?,
 
         @Column(nullable = true)
-        val description: String?,
+        var description: String?,
 
         @OneToOne(cascade = [CascadeType.ALL])
         @JoinColumn(name = "fix_version", referencedColumnName = "id")
-        val fixVersion: Release?,
+        var fixVersion: Release?,
 
         @Column(nullable = true)
         val key: String?,
 
         @OneToOne(cascade = [CascadeType.ALL])
         @JoinColumn(name = "status", referencedColumnName = "id")
-        val status: TaskStatus?,
+        var status: TaskStatus?,
 
         @OneToOne(cascade = [CascadeType.ALL])
         @JoinColumn(name = "assignee", referencedColumnName = "id")
-        val assignee: User?,
+        var assignee: User?,
 
         @OneToOne(cascade = [CascadeType.ALL])
         @JoinColumn(name = "reporter", referencedColumnName = "id")
-        val reporter: User?,
+        var reporter: User?,
 
         @OneToOne(cascade = [CascadeType.ALL])
         @JoinColumn(name = "affected_version", referencedColumnName = "id")
-        val affectedVersion: Release?
+        var affectedVersion: Release?
 )
