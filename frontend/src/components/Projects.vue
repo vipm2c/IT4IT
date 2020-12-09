@@ -116,39 +116,6 @@
         <pre>{{ infoModal.content }}</pre>
       </b-modal>
 
-      <b-row>
-        <b-col sm="5" md="6" class="my-1">
-          <b-form-group
-              label="Per page"
-              label-cols-sm="6"
-              label-cols-md="4"
-              label-cols-lg="3"
-              label-align-sm="right"
-              label-size="sm"
-              label-for="perPageSelect"
-              class="mb-0"
-          >
-            <b-form-select
-                v-model="perPage"
-                id="perPageSelect"
-                size="sm"
-                :options="pageOptions"
-            ></b-form-select>
-          </b-form-group>
-        </b-col>
-
-        <b-col sm="7" md="6" class="my-1">
-          <b-pagination
-              v-model="currentPage"
-              :total-rows="totalRows"
-              :per-page="perPage"
-              align="fill"
-              size="sm"
-              class="my-0"
-          ></b-pagination>
-        </b-col>
-      </b-row>
-
     </b-container>
 
   </div>
@@ -207,8 +174,7 @@ export default {
   },
   methods: {
     loadUserContent() {
-      const header = {'Authorization': 'Bearer ' + this.$store.getters.getToken};
-      AXIOS.get('/project/all', { headers: header })
+      AXIOS.get('/project/all')
           .then(response => {
             this.$data.items = response.data;
           })
@@ -226,10 +192,9 @@ export default {
         spec: item.spec,
         archived: action
       };
-      console.log(body)
-      AXIOS.post('/project/'+item.key, body, { headers: header})
+      AXIOS.put('/project/'+item.key, body, { headers: header})
           .then(response => {
-            console.log(response.data)
+            console.log(response)
             this.loadUserContent();
           })
           .catch(error => {

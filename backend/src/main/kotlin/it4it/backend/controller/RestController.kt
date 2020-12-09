@@ -7,10 +7,7 @@ import it4it.backend.project.ProjectRepository
 import it4it.backend.project.release.Release
 import it4it.backend.project.release.ReleaseRepository
 import it4it.backend.repository.UserRepository
-import it4it.backend.task.NewTask
-import it4it.backend.task.Task
-import it4it.backend.task.TaskRepository
-import it4it.backend.task.TaskStatusRepository
+import it4it.backend.task.*
 import it4it.backend.task.link.LinkRepository
 import it4it.backend.task.link.LinkTypeRepository
 import it4it.backend.user.NewUser
@@ -61,6 +58,9 @@ class RestController() {
 
     @Autowired
     lateinit var taskRepository: TaskRepository
+
+    @Autowired
+    lateinit var taskService: TaskService
 
     @GetMapping("/project/all")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
@@ -278,36 +278,8 @@ class RestController() {
     fun newTask(authentication: Authentication,@Valid @RequestBody newTask: NewTask): ResponseEntity<*> {
         val user: User = userRepository.findByUsername(authentication.name).get()
         return if ((newTask.assignee != null) and (newTask.summary != null) and (newTask.project != null) ) {
-            val project = projectRepository.findProjectById(newTask.project!!).get()
-            val status = taskStatusRepository.findById(2).get()
-            val assignee = userRepository.findById(newTask.assignee!!).get()
-            project.count = project.count?.plus(1)
-            projectRepository.save(project)
-            val task = Task(
-                    0,
-                    project,
-                    newTask.summary,
-                    newTask.description,
-                    null,
-                    "$project.key-$project.count",
-                    status,
-                    assignee,
-                    user,
-                    null
-            )
-            if (newTask.fixVersion != null){
-                val fixVersion = releaseRepository.findReleaseById(newTask.fixVersion!!)
-                if (fixVersion.isPresent){
-                    task.fixVersion = fixVersion.get()
-                }
-            }
-            if (newTask.affectedVersion != null){
-                val affectedVersion = releaseRepository.findReleaseById(newTask.affectedVersion!!)
-                if (affectedVersion.isPresent){
-                    task.affectedVersion = affectedVersion.get()
-                }
-            }
-            taskRepository.save(task)
+            val task = taskService.newTask(user,newTask)
+            taskService.save(task)
             ResponseEntity.accepted().body(task)
         }
         else{
@@ -322,37 +294,8 @@ class RestController() {
         val user: User = userRepository.findByUsername(authentication.name).get()
         val task = taskRepository.findById(taskId)
         return if (task.isPresent) {
-            if (newTask.status != null) {
-                val status = taskStatusRepository.findById(newTask.status!!)
-                if(status.isPresent) {
-                    task.get().status = status.get()
-                }
-            }
-            if (newTask.assignee != null) {
-                val assignee = userRepository.findById(newTask.assignee!!)
-                if(assignee.isPresent) {
-                    task.get().assignee = assignee.get()
-                }
-            }
-            if (newTask.fixVersion != null){
-                val fixVersion = releaseRepository.findReleaseById(newTask.fixVersion!!)
-                if (fixVersion.isPresent){
-                    task.get().fixVersion = fixVersion.get()
-                }
-            }
-            if (newTask.affectedVersion != null){
-                val affectedVersion = releaseRepository.findReleaseById(newTask.affectedVersion!!)
-                if (affectedVersion.isPresent){
-                    task.get().affectedVersion = affectedVersion.get()
-                }
-            }
-            if ((newTask.summary != null) and (newTask.summary != task.get().summary) ){
-                task.get().summary = newTask.summary
-            }
-            if ((newTask.description != null) and (newTask.description != task.get().description) ){
-                task.get().description = newTask.description
-            }
-            taskRepository.save(task.get())
+            taskService.updateTask(user, task.get(), newTask)
+            taskService.save(task.get())
             ResponseEntity.accepted().body(task.get())
         }
         else{
