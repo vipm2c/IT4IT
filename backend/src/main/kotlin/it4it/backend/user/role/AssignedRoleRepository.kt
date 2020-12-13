@@ -10,6 +10,8 @@ interface AssignedRoleRepository: CrudRepository<AssignedRole, Long> {
 
     fun findAllByProject(project: Project): List<AssignedRole>
 
+    fun findAllByProjectAndUser(project: Project, user:User): List<AssignedRole>
+
     fun findAllByUser(user: User): List<AssignedRole>
 
     fun findAllByRole(role: Role): List<AssignedRole>

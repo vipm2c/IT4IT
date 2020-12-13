@@ -102,16 +102,16 @@
           <b-button v-b-modal.infoModal size="sm" @click="info(row.item)" class="mr-1">
             Info
           </b-button>
-          <b-button size="sm" @click="archive(row.item, true)" class="mr-1" v-if="row.item.archived === false && (row.item.role === 'admin' || row.item.role === 'manager')">
+          <b-button size="sm" @click="archive(row.item, true)" class="mr-1" v-if="row.item.archived === false && row.item.role.match(/.*(admin|manager).*/)">
             Archive
           </b-button>
-          <b-button size="sm" @click="archive(row.item, false)" class="mr-1" v-if="row.item.archived === true && (row.item.role === 'admin' || row.item.role === 'manager')">
+          <b-button size="sm" @click="archive(row.item, false)" class="mr-1" v-if="row.item.archived === true && row.item.role.match(/.*(admin|manager).*/)">
             Recover
           </b-button>
-          <b-button v-b-modal.editModal size="sm" @click="info(row.item)" class="mr-1" v-if="row.item.role === 'admin' || row.item.role === 'manager'">
+          <b-button v-b-modal.editModal size="sm" @click="info(row.item)" class="mr-1" v-if="row.item.role.match(/.*(admin|manager).*/)">
             Edit
           </b-button>
-          <b-button v-b-modal.userModal size="sm" @click="user(row.item)" class="mr-1" v-if="row.item.role === 'admin' || row.item.role === 'manager'">
+          <b-button v-b-modal.userModal size="sm" @click="user(row.item)" class="mr-1" v-if="row.item.role.match(/.*(admin|manager).*/)">
             Add user
           </b-button>
         </template>

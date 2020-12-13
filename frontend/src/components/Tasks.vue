@@ -117,7 +117,10 @@
         <div>
           <div>
             <div class="mt-2">Project</div>
-            <b-form-select disabled placeholder="Project" v-model="infoModal.project" :options="infoModal.projects" v-on:change="loadFieldsContent(project)" />
+            <b-form-select disabled placeholder="Project" v-model="infoModal.project" :options="infoModal.projects" v-on:change="loadFieldsContent(infoModal.project)" />
+
+            <div class="mt-2">Status</div>
+            <b-form-select disabled placeholder="Status" v-model="infoModal.status" :options="infoModal.statuses" />
 
             <div class="mt-2">Summary</div>
             <b-form-input disabled type="text" placeholder="Summary" v-model="infoModal.summary" />
@@ -128,11 +131,14 @@
             <div class="mt-2">Assignee</div>
             <b-form-select disabled placeholder="Assignee" v-model="infoModal.assignee" :options="infoModal.users" />
 
+            <div class="mt-2">Reporter</div>
+            <b-form-select disabled placeholder="Assignee" v-model="infoModal.reporter" :options="infoModal.users" />
+
             <div class="mt-2">Fix Version</div>
             <b-form-select disabled placeholder="Fix Version" v-model="infoModal.fixVersion" :options="infoModal.releases" />
 
             <div class="mt-2">Affected Version</div>
-            <b-form-select disabled placeholder="Affecterd Version" v-model="infoModal.affectedVersion" :options="infoModal.releases" />
+            <b-form-select disabled placeholder="Affected Version" v-model="infoModal.affectedVersion" :options="infoModal.releases" />
             <br>
           </div>
         </div>
@@ -142,7 +148,10 @@
         <div>
           <div>
             <div class="mt-2">Project</div>
-            <b-form-select disabled placeholder="Project" v-model="infoModal.project" :options="infoModal.projects" v-on:change="loadFieldsContent(project)" />
+            <b-form-select disabled placeholder="Project" v-model="infoModal.project" :options="infoModal.projects" v-on:change="loadFieldsContent(infoModal.project)" />
+
+            <div class="mt-2">Status</div>
+            <b-form-select placeholder="Status" v-model="infoModal.status" :options="infoModal.statuses" />
 
             <div class="mt-2">Summary</div>
             <b-form-input type="text" placeholder="Summary" v-model="infoModal.summary" />
@@ -153,11 +162,14 @@
             <div class="mt-2">Assignee</div>
             <b-form-select placeholder="Assignee" v-model="infoModal.assignee" :options="infoModal.users" />
 
+            <div class="mt-2">Reporter</div>
+            <b-form-select disabled placeholder="Assignee" v-model="infoModal.reporter" :options="infoModal.users" />
+
             <div class="mt-2">Fix Version</div>
             <b-form-select placeholder="Fix Version" v-model="infoModal.fixVersion" :options="infoModal.releases" />
 
             <div class="mt-2">Affected Version</div>
-            <b-form-select placeholder="Affecterd Version" v-model="infoModal.affectedVersion" :options="infoModal.releases" />
+            <b-form-select placeholder="Affected Version" v-model="infoModal.affectedVersion" :options="infoModal.releases" />
             <br>
           </div>
         </div>
@@ -194,11 +206,15 @@ export default {
         id: 'info-modal',
         title: '',
         content: '',
+        taskId:null,
+        status:null,
+        statuses:[],
         users:[],
         releases:[],
         project:'',
         projects:[],
         assignee:'',
+        reporter:'',
         fixVersion:null,
         affectedVersion: null,
       }
@@ -230,25 +246,7 @@ export default {
             console.log('ERROR: ' + error.response);
           })
     },
-    archive(item,action) {
-      const header = {'Authorization': 'Bearer ' + this.$store.getters.getToken};
-      item.archived = action
-      const body = {
-        name: item.name,
-        description: item.description,
-        key: item.key,
-        spec: item.spec,
-        archived: action
-      };
-      AXIOS.put('/project/'+item.key, body, { headers: header})
-          .then(response => {
-            console.log(response)
-            this.loadUserContent();
-          })
-          .catch(error => {
-            console.log('ERROR: ' + error.response);
-          })
-    },loadFieldsContent(projectKey){
+    loadFieldsContent(projectKey){
       AXIOS.get('/project/'+projectKey+"/users")
           .then(response => {
             console.log(response.data);
@@ -258,6 +256,25 @@ export default {
                 text: object.user.name+" ("+object.user.username+")"
               };
               this.infoModal.users.push(item)
+            })
+          }, error => {
+            this.$data.alertMessage = (error.response.data.message.length < 150) ? error.response.data.message : 'Request error. Please, report this error website owners'
+            this.showAlert();
+          })
+          .catch(error => {
+            console.log(error);
+            this.$data.alertMessage = 'Request error. Please, report this error website owners';
+            this.showAlert();
+          });
+      AXIOS.get('/status')
+          .then(response => {
+            console.log(response.data);
+            response.data.forEach(object => {
+              const item = {
+                value: object.id,
+                text: object.name
+              };
+              this.infoModal.statuses.push(item)
             })
           }, error => {
             this.$data.alertMessage = (error.response.data.message.length < 150) ? error.response.data.message : 'Request error. Please, report this error website owners'
@@ -289,6 +306,7 @@ export default {
           });
     },
     info(item) {
+      this.loadFieldsContent(item.project.key)
       AXIOS.get('/project/all')
           .then(response => {
             console.log(response.data)
@@ -304,52 +322,24 @@ export default {
             console.log('ERROR: ' + error.response);
           })
 
-      this.infoModal.title = item.name
-      //this.$root.$emit('bv::show::modal', this.infoModal.id, button)
-      this.infoModal.row.name = item.name
-      this.infoModal.row.key = item.key
-      this.infoModal.row.description = item.description
-      this.infoModal.row.spec = item.spec
-      this.infoModal.row.archived = item.archived
-    },
-    user(item) {
-      this.userModal.users = []
-      this.userModal.roles = []
-      AXIOS.get('/user/all')
-          .then(response => {
-            console.log(response.data)
-            response.data.forEach(userObject =>{
-              const user = {
-                value: userObject.username,
-                text: userObject.name
-              };
-              console.log(user)
-              this.userModal.users.push(user)
-            })
-            console.log(this.userModal.users)
-          })
-          .catch(error => {
-            console.log('ERROR: ' + error.response);
-          })
-      AXIOS.get('/role/all')
-          .then(response => {
-            console.log(response.data)
-            response.data.forEach(roleObject => {
-              const role = {
-                value: roleObject.id,
-                text: roleObject.name
-              };
-              console.log(role)
-              this.userModal.roles.push(role)
-            })
-            console.log(this.userModal.roles)
-          })
-          .catch(error => {
-            console.log('ERROR: ' + error.response);
-          })
-      this.userModal.title = "Добавление пользователей к проекту "+item.key
-      this.userModal.project = item.key
-      //this.$root.$emit('bv::show::modal', this.userModal.id, button)
+      this.infoModal.title = '('+item.key+') '+item.summary
+      this.infoModal.taskId = item.id
+      this.infoModal.project = item.project.key
+      this.infoModal.summary = item.summary
+      this.infoModal.status = item.status.id
+      if (item.description) {
+        this.infoModal.description = item.description
+      }
+      if (item.assignee) {
+        this.infoModal.assignee = item.assignee.username
+      }
+      this.infoModal.reporter = item.reporter.username
+      if (item.fixVersion) {
+        this.infoModal.affectedVersion = item.affectedVersion.id
+      }
+      if(item.affectedVersion) {
+        this.infoModal.fixVersion = item.fixVersion.id
+      }
     },
     newAssignedRole(user, role, project) {
       const body = {
@@ -367,15 +357,16 @@ export default {
           })
       this.resetUserModal()
     },
-    edit(item) {
+    edit() {
       const body = {
-        name: item.name,
-        description: item.description,
-        key: item.key,
-        spec: item.spec,
-        archived: item.archived
+        summary: this.infoModal.summary,
+        status: this.infoModal.status,
+        description: this.infoModal.description,
+        assignee: this.infoModal.assignee,
+        fixVersion: this.infoModal.fixVersion,
+        affectedVersion: this.infoModal.affectedVersion
       };
-      AXIOS.put('/project/'+item.key, body)
+      AXIOS.put('/task/'+this.infoModal.taskId, body)
           .then(response => {
             console.log(response)
             this.loadUserContent();
@@ -383,26 +374,25 @@ export default {
           .catch(error => {
             console.log('ERROR: ' + error.response);
           })
-      console.log("Редактируем проект "+item.key)
       this.resetInfoModal()
     },
     resetInfoModal() {
       this.infoModal.title = ''
       this.infoModal.content = ''
-      this.infoModal.row.name = ''
-      this.infoModal.row.key = ''
-      this.infoModal.row.description = ''
-      this.infoModal.row.spec = ''
+      this.infoModal.project = ''
+      this.infoModal.summary = ''
+      this.infoModal.description = ''
+      this.infoModal.assignee = ''
+      this.infoModal.fixVersion = null
+      this.infoModal.affectedVersion = null
+      this.infoModal.reporter = ''
       this.infoModal.users = []
-      this.infoModal.row.archived = false
-    },
-    resetUserModal() {
-      this.userModal.title = ''
-      this.userModal.users = []
-      this.userModal.roles = []
-      this.userModal.user = ''
-      this.userModal.role = ''
-      this.userModal.project = ''
+      this.infoModal.projects = []
+      this.infoModal.releases = []
+      this.infoModal.taskId = null
+      this.infoModal.status = null
+      this.infoModal.statuses = []
+      this.infoModal.taskId = null
     },
     onFiltered(filteredItems) {
       // Trigger pagination to update the number of buttons/pages due to filtering

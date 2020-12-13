@@ -21,8 +21,14 @@ class ProjectService {
         val projects: List<Project>
         if (user.admin){
             projects = projectRepository.findAll()
-            projects.forEach {
-                it.role = "admin"
+            projects.forEach { project ->
+                project.role = "admin"
+                val roles = assignedRoleRepository.findAllByProjectAndUser(project,user)
+                if (roles.count() != 0){
+                    roles.forEach { role ->
+                        project.role += ",${role.role.name!!.toLowerCase()}"
+                    }
+                }
             }
         }
         else {

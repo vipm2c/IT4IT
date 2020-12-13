@@ -34,7 +34,6 @@
           <b-form-input type="text" placeholder="Summary" v-model="summary" />
 
           <div class="mt-2">Description</div>
-          <b-form-textarea type="text" placeholder="Description" v-model="description" rows="3" max-rows="6" />
 
           <div class="mt-2">Assignee</div>
           <b-form-select placeholder="Assignee" v-model="assignee" :options="users" />
@@ -43,7 +42,7 @@
           <b-form-select placeholder="Fix Version" v-model="fixVersion" :options="releases" />
 
           <div class="mt-2">Affected Version</div>
-          <b-form-select placeholder="Affecterd Version" v-model="affectedVersion" :options="releases" />
+          <b-form-select placeholder="Affected Version" v-model="affectedVersion" :options="releases" />
           <br>
           <br>
 
@@ -162,11 +161,13 @@ export default {
           .then(response => {
             console.log(response.data);
             response.data.forEach(object => {
+            if (object.role !== "admin"){
               const item = {
                 value: object.key,
-                text: object.name+" ("+object.key+")"
+                text: object.name + " (" + object.key + ")"
               };
               this.projects.push(item)
+            }
             })
           }, error => {
             this.$data.alertMessage = (error.response.data.message.length < 150) ? error.response.data.message : 'Request error. Please, report this error website owners'
