@@ -4,7 +4,7 @@ import it4it.backend.project.NewProject
 import org.springframework.web.bind.annotation.*
 import it4it.backend.project.Project
 import it4it.backend.project.ProjectRepository
-import it4it.backend.project.release.Release
+import it4it.backend.project.ProjectService
 import it4it.backend.project.release.ReleaseRepository
 import it4it.backend.repository.UserRepository
 import it4it.backend.task.*
@@ -15,7 +15,6 @@ import it4it.backend.user.User
 import it4it.backend.user.role.*
 import it4it.backend.web.response.ResponseMessage
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.expression.spel.ast.Assign
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -62,17 +61,15 @@ class RestController() {
     @Autowired
     lateinit var taskService: TaskService
 
+    @Autowired
+    lateinit var projectService: ProjectService
+
     @GetMapping("/project/all")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @ResponseBody
     fun getProjects(authentication: Authentication): ResponseEntity<*> {
         val user: User = userRepository.findByUsername(authentication.name).get()
-        return if (user.admin) {
-            ResponseEntity.accepted().body(projectRepository.findAll())
-        }
-        else{
-            ResponseEntity.accepted().body(projectRepository.findAll())
-        }
+        return ResponseEntity.accepted().body(projectService.getProjects(user))
     }
 
     @PostMapping("/project")
@@ -156,9 +153,9 @@ class RestController() {
         val project = projectRepository.findProjectByKey(projectKey)
         return if (project.isPresent) {
             if (user.admin) {
-                ResponseEntity.accepted().body(releaseRepository.findReleaseByProject(project.get().id))
+                ResponseEntity.accepted().body(releaseRepository.findReleaseByProject(project.get()))
             } else {
-                ResponseEntity.accepted().body(releaseRepository.findReleaseByProject(project.get().id))
+                ResponseEntity.accepted().body(releaseRepository.findReleaseByProject(project.get()))
             }
         }
         else {
@@ -209,6 +206,9 @@ class RestController() {
     @ResponseBody
     fun newAssignedRoles(authentication: Authentication, @PathVariable projectKey: String, @Valid @RequestBody newAssignedRole: NewAssignedRole): ResponseEntity<*> {
         val user: User = userRepository.findByUsername(authentication.name).get()
+        print(newAssignedRole.user)
+        print(newAssignedRole.role)
+        print(projectKey)
         val userCandidate = userRepository.findByUsername(newAssignedRole.user!!)
         val roleCandidate = roleRepository.findById(newAssignedRole.role!!)
         val projectCandidate = projectRepository.findProjectByKey(projectKey)
@@ -258,17 +258,18 @@ class RestController() {
     fun getTasks(authentication: Authentication): ResponseEntity<*> {
         val user: User = userRepository.findByUsername(authentication.name).get()
         return if (user.admin) {
-            ResponseEntity.accepted().body(taskStatusRepository.findAll())
+            ResponseEntity.accepted().body(taskRepository.findAll())
         }
         else{
-            lateinit var tasks: List<Task>
+            val tasks: MutableList<Task> = emptyList<Task>().toMutableList<Task>()
             val assignedRoles = assignedRoleRepository.findAllByUser(user)
             assignedRoles.forEach { role ->
-                taskRepository.findAllByProject(role.project!!).forEach{task ->
-                    tasks.plus(task)
+                val projectTasks = taskRepository.findAllByProject(role.project)
+                projectTasks.forEach{task ->
+                    tasks.add(task)
                 }
             }
-            ResponseEntity.accepted().body(tasks)
+            ResponseEntity.accepted().body(tasks.toList())
         }
     }
 
@@ -279,7 +280,6 @@ class RestController() {
         val user: User = userRepository.findByUsername(authentication.name).get()
         return if ((newTask.assignee != null) and (newTask.summary != null) and (newTask.project != null) ) {
             val task = taskService.newTask(user,newTask)
-            taskService.save(task)
             ResponseEntity.accepted().body(task)
         }
         else{
@@ -295,7 +295,6 @@ class RestController() {
         val task = taskRepository.findById(taskId)
         return if (task.isPresent) {
             taskService.updateTask(user, task.get(), newTask)
-            taskService.save(task.get())
             ResponseEntity.accepted().body(task.get())
         }
         else{
@@ -309,10 +308,10 @@ class RestController() {
     fun getUsers(authentication: Authentication): ResponseEntity<*> {
         val user: User = userRepository.findByUsername(authentication.name).get()
         return if (user.admin) {
-            ResponseEntity.accepted().body(projectRepository.findAll())
+            ResponseEntity.accepted().body(userRepository.findAll())
         }
         else{
-            ResponseEntity.accepted().body(projectRepository.findAll())
+            ResponseEntity.accepted().body(userRepository.findAll())
         }
     }
 

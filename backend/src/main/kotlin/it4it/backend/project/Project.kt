@@ -26,5 +26,7 @@ class Project (
         var archived: Boolean?,
 
         @Column(nullable = true)
-        var count: Long?
+        var count: Long?,
+
+        var role: String = "user"
 )

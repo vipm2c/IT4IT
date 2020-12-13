@@ -1,6 +1,6 @@
 <template>
-  <div div="projects">
-    <h2>Projects</h2>
+  <div div="tasks">
+    <h2>Tasks</h2>
 
     <b-container fluid>
       <!-- User Interface controls -->
@@ -98,21 +98,16 @@
           {{ row.value }}
         </template>
 
+        <template #cell(status)="row">
+          {{ row.value.name }}
+        </template>
+
         <template #cell(actions)="row">
           <b-button v-b-modal.infoModal size="sm" @click="info(row.item)" class="mr-1">
             Info
           </b-button>
-          <b-button size="sm" @click="archive(row.item, true)" class="mr-1" v-if="row.item.archived === false && (row.item.role === 'admin' || row.item.role === 'manager')">
-            Archive
-          </b-button>
-          <b-button size="sm" @click="archive(row.item, false)" class="mr-1" v-if="row.item.archived === true && (row.item.role === 'admin' || row.item.role === 'manager')">
-            Recover
-          </b-button>
-          <b-button v-b-modal.editModal size="sm" @click="info(row.item)" class="mr-1" v-if="row.item.role === 'admin' || row.item.role === 'manager'">
+          <b-button v-b-modal.editModal size="sm" @click="info(row.item)" class="mr-1">
             Edit
-          </b-button>
-          <b-button v-b-modal.userModal size="sm" @click="user(row.item)" class="mr-1" v-if="row.item.role === 'admin' || row.item.role === 'manager'">
-            Add user
           </b-button>
         </template>
 
@@ -121,56 +116,52 @@
       <b-modal id="infoModal" :title="infoModal.title" ok-only v-on:ok="resetInfoModal"  @hide="resetInfoModal">
         <div>
           <div>
-            <b-form-input type="text" disabled placeholder="Project Name" v-model="infoModal.row.name" />
-            <div class="mt-2"></div>
-            <b-form-input type="text" disabled placeholder="Project Key" v-model="infoModal.row.key" />
-            <div class="mt-2"></div>
-            <b-form-input type="text" disabled placeholder="Description" v-model="infoModal.row.description" />
-            <div class="mt-2"></div>
-            <b-form-input type="text" disabled placeholder="Spec" v-model="infoModal.row.spec" />
-            <div class="mt-2"></div>
-            <b-form-checkbox id="checkbox-1" disabled v-model="infoModal.row.archived" name="checkbox-1" >Archived</b-form-checkbox>
-            <div class="mt-2"></div>
+            <div class="mt-2">Project</div>
+            <b-form-select disabled placeholder="Project" v-model="infoModal.project" :options="infoModal.projects" v-on:change="loadFieldsContent(project)" />
+
+            <div class="mt-2">Summary</div>
+            <b-form-input disabled type="text" placeholder="Summary" v-model="infoModal.summary" />
+
+            <div class="mt-2">Description</div>
+            <b-form-textarea disabled type="text" placeholder="Description" v-model="infoModal.description" rows="3" max-rows="6" />
+
+            <div class="mt-2">Assignee</div>
+            <b-form-select disabled placeholder="Assignee" v-model="infoModal.assignee" :options="infoModal.users" />
+
+            <div class="mt-2">Fix Version</div>
+            <b-form-select disabled placeholder="Fix Version" v-model="infoModal.fixVersion" :options="infoModal.releases" />
+
+            <div class="mt-2">Affected Version</div>
+            <b-form-select disabled placeholder="Affecterd Version" v-model="infoModal.affectedVersion" :options="infoModal.releases" />
+            <br>
           </div>
-          <b-table
-              show-empty
-              small
-              stacked="md"
-              :items="infoModal.users"
-              :fields="infoModal.fields"
-              :fixed=true
-              :sort-by.sync="sortBy"
-              :sort-desc.sync="sortDesc"
-              :sort-direction="sortDirection"
-          >
-          </b-table>
         </div>
       </b-modal>
 
       <b-modal id="editModal" :title="infoModal.title" v-on:ok="edit(infoModal.row)" v-on:cancel="resetInfoModal" @hide="resetInfoModal">
-          <div>
-              <div>
-                <b-form-input type="text" placeholder="Project Name" v-model="infoModal.row.name" />
-                <div class="mt-2"></div>
-                <b-form-input type="text" placeholder="Description" v-model="infoModal.row.description" />
-                <div class="mt-2"></div>
-                <b-form-input type="text" placeholder="Spec" v-model="infoModal.row.spec" />
-                <div class="mt-2"></div>
-          </div>
-        </div>
-      </b-modal>
-
-      <b-modal id="userModal" :title="userModal.title" v-on:ok="newAssignedRole(userModal.user, userModal.role, userModal.project)" v-on:cancel="resetUserModal" @hide="resetUserModal">
         <div>
           <div>
-            <b-form-select placeholder="User" v-model="userModal.user" :options="userModal.users" />
-            <div class="mt-2"></div>
-            <b-form-select placeholder="Role" v-model="userModal.role" :options="userModal.roles" />
-            <div class="mt-2"></div>
+            <div class="mt-2">Project</div>
+            <b-form-select disabled placeholder="Project" v-model="infoModal.project" :options="infoModal.projects" v-on:change="loadFieldsContent(project)" />
+
+            <div class="mt-2">Summary</div>
+            <b-form-input type="text" placeholder="Summary" v-model="infoModal.summary" />
+
+            <div class="mt-2">Description</div>
+            <b-form-textarea type="text" placeholder="Description" v-model="infoModal.description" rows="3" max-rows="6" />
+
+            <div class="mt-2">Assignee</div>
+            <b-form-select placeholder="Assignee" v-model="infoModal.assignee" :options="infoModal.users" />
+
+            <div class="mt-2">Fix Version</div>
+            <b-form-select placeholder="Fix Version" v-model="infoModal.fixVersion" :options="infoModal.releases" />
+
+            <div class="mt-2">Affected Version</div>
+            <b-form-select placeholder="Affecterd Version" v-model="infoModal.affectedVersion" :options="infoModal.releases" />
+            <br>
           </div>
         </div>
       </b-modal>
-
     </b-container>
 
   </div>
@@ -180,14 +171,14 @@
 import {AXIOS} from '@/components/http-commons'
 
 export default {
-  name: "Projects",
+  name: "Tasks",
   data() {
     return {
       items: [],
       fields: [
-        { key: 'name', label: 'Project Name', sortable: true, sortDirection: 'asc'},
-        { key: 'key', label: 'Project Key', sortable: true },
-        { key: 'archived', label: 'Archived', formatter: (value) => {return value ? 'Yes' : 'No'}},
+        { key: 'key', label: 'Task Key', sortable: true, sortDirection: 'asc'},
+        { key: 'summary', label: 'Summary', sortable: true },
+        { key: 'status', label: 'Status', sortable: true },
         { key: 'actions', label: 'Actions' }
       ],
       totalRows: 1,
@@ -203,28 +194,13 @@ export default {
         id: 'info-modal',
         title: '',
         content: '',
-        fields: [
-          { key: 'user', label: 'User', sortable: true, sortDirection: 'asc'},
-          { key: 'role', label: 'Role', sortable: true }
-        ],
         users:[],
-        row:{
-          name:'',
-          key:'',
-          description:'',
-          spec:'',
-          archived:false
-        }
-      },
-      userModal: {
-        id: 'info-modal',
-        title: '',
-        content: '',
-        user: '',
-        role: '',
-        project: '',
-        users: [],
-        roles: []
+        releases:[],
+        project:'',
+        projects:[],
+        assignee:'',
+        fixVersion:null,
+        affectedVersion: null,
       }
     }
   },
@@ -244,8 +220,9 @@ export default {
   },
   methods: {
     loadUserContent() {
-      AXIOS.get('/project/all')
+      AXIOS.get('/task')
           .then(response => {
+            console.log(response.data);
             this.$data.items = response.data;
             this.totalRows = response.data.length;
           })
@@ -271,22 +248,62 @@ export default {
           .catch(error => {
             console.log('ERROR: ' + error.response);
           })
+    },loadFieldsContent(projectKey){
+      AXIOS.get('/project/'+projectKey+"/users")
+          .then(response => {
+            console.log(response.data);
+            response.data.forEach(object => {
+              const item = {
+                value: object.user.username,
+                text: object.user.name+" ("+object.user.username+")"
+              };
+              this.infoModal.users.push(item)
+            })
+          }, error => {
+            this.$data.alertMessage = (error.response.data.message.length < 150) ? error.response.data.message : 'Request error. Please, report this error website owners'
+            this.showAlert();
+          })
+          .catch(error => {
+            console.log(error);
+            this.$data.alertMessage = 'Request error. Please, report this error website owners';
+            this.showAlert();
+          });
+      AXIOS.get('/project/'+projectKey+"/release/all")
+          .then(response => {
+            console.log(response.data);
+            response.data.forEach(object => {
+              const item = {
+                value: object.id,
+                text: object.name
+              };
+              this.infoModal.releases.push(item)
+            })
+          }, error => {
+            this.$data.alertMessage = (error.response.data.message.length < 150) ? error.response.data.message : 'Request error. Please, report this error website owners'
+            this.showAlert();
+          })
+          .catch(error => {
+            console.log(error);
+            this.$data.alertMessage = 'Request error. Please, report this error website owners';
+            this.showAlert();
+          });
     },
     info(item) {
-      AXIOS.get('/project/' + item.key + '/users')
+      AXIOS.get('/project/all')
           .then(response => {
             console.log(response.data)
-            response.data.forEach(userObject =>{
-              const user = {
-                user: userObject.user.name + " (" + userObject.user.username + ")",
-                role: userObject.role.name
+            response.data.forEach(object =>{
+              const item = {
+                text: object.name + " (" + object.key + ")",
+                value: object.key
               }
-              this.infoModal.users.push(user)
+              this.infoModal.projects.push(item)
             })
           })
           .catch(error => {
             console.log('ERROR: ' + error.response);
           })
+
       this.infoModal.title = item.name
       //this.$root.$emit('bv::show::modal', this.infoModal.id, button)
       this.infoModal.row.name = item.name

@@ -53,7 +53,7 @@ export default {
     login() {
       AXIOS.post(`/auth/signin`, {'username': this.$data.username, 'password': this.$data.password})
           .then(response => {
-            console.log(response)
+            //console.log(response)
             this.$store.dispatch('login', {'token': response.data.accessToken, 'roles': response.data.authorities, 'username': response.data.username});
             this.$router.push('/')
           }, error => {

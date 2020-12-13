@@ -1,11 +1,11 @@
 package it4it.backend.task.link
 
-import javax.persistence.*
 import it4it.backend.task.Task
+import javax.persistence.*
 
 @Entity
-@Table(name="tasklinks")
-class Link (
+@Table(name = "tasklinks")
+class Link(
 
         @Id
         @GeneratedValue(strategy = GenerationType.AUTO)
@@ -15,11 +15,11 @@ class Link (
         @JoinColumn(name = "link_type", referencedColumnName = "id")
         val linkType: LinkType?,
 
-        @OneToOne(cascade = [CascadeType.ALL])
-        @JoinColumn(name = "inward", referencedColumnName = "id")
+        @ManyToOne(cascade = [CascadeType.ALL])
+        @JoinColumn(name = "inward", referencedColumnName = "id", insertable = false, updatable = false)
         val inward: Task?,
 
-        @OneToOne(cascade = [CascadeType.ALL])
-        @JoinColumn(name = "outward", referencedColumnName = "id")
+        @ManyToOne(cascade = [CascadeType.ALL])
+        @JoinColumn(name = "outward", referencedColumnName = "id", insertable = false, updatable = false )
         val outward: Task?
 )

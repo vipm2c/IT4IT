@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 class NewTask {
 
     @JsonProperty("project")
-    var project: Long? = null
+    var project: String? = null
 
     @JsonProperty("summary")
     var summary: String? = null
@@ -20,14 +20,14 @@ class NewTask {
     var fixVersion: Long? = null
 
     @JsonProperty("assignee")
-    var assignee: Long? = null
+    var assignee: String? = null
 
     @JsonProperty("affectedVersion")
     var affectedVersion: Long? = null
 
     constructor(){}
 
-    constructor(status: Long, project: Long, summary: String, description: String, fixVersion: Long, assignee: Long, affectedVersion: Long){
+    constructor(status: Long, project: String, summary: String, description: String, fixVersion: Long, assignee: String, affectedVersion: Long){
         this.project = project
         this.summary = summary
         this.description = description

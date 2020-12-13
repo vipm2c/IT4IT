@@ -14,13 +14,13 @@ class AssignedRole (
 
         @OneToOne(cascade = [CascadeType.ALL])
         @JoinColumn(name = "role",referencedColumnName = "id")
-        val role: Role?,
+        val role: Role,
 
         @OneToOne(cascade = [CascadeType.ALL])
-        @JoinColumn(name = "user",referencedColumnName = "id")
-        val user: User?,
+        @JoinColumn(name = "users",referencedColumnName = "id")
+        val user: User,
 
         @OneToOne(cascade = [CascadeType.ALL])
         @JoinColumn(name = "project",referencedColumnName = "id")
-        val project: Project?
+        val project: Project
 )

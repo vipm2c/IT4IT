@@ -7,6 +7,7 @@ const state = {
     role: localStorage.getItem('user-role') || '',
     username: localStorage.getItem('user-name') || '',
     authorities: localStorage.getItem('authorities') || '',
+    projects: localStorage.getItem('projects') || []
 };
 
 const getters = {
@@ -24,6 +25,9 @@ const getters = {
             return false;
         }
     },
+    getProjects: state => {
+        return state.projects
+    },
     getUsername: state => {
         return state.username;
     },
@@ -40,11 +44,15 @@ const mutations = {
         state.authorities = user.roles;
         var isUser = false;
         var isAdmin = false;
+        var projects = []
         for (var i = 0; i < user.roles.length; i++) {
             if (user.roles[i].authority === 'ROLE_USER') {
                 isUser = true;
             } else if (user.roles[i].authority === 'ROLE_ADMIN') {
                 isAdmin = true;
+            }
+            else{
+                projects += user.roles[i].authority
             }
         }
         if (isUser) {
@@ -55,6 +63,8 @@ const mutations = {
             localStorage.setItem('user-role', 'admin');
             state.role = 'admin';
         }
+        localStorage.setItem('projects', projects)
+        state.projects = projects
     },
     auth_logout: () => {
         state.token = '';

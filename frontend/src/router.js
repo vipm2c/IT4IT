@@ -6,6 +6,9 @@ import SignUp from '@/components/SignUp'
 import UserPage from '@/components/UserPage'
 import AdminPage from '@/components/AdminPage'
 import Projects from '@/components/Projects'
+import NewProject from '@/components/NewProject'
+import NewTask from '@/components/NewTask'
+import Tasks from "@/components/Tasks"
 
 Vue.use(Router)
 
@@ -41,6 +44,21 @@ export default new Router({
             path: '/projects',
             name: 'Projects',
             component: Projects
+        },
+        {
+            path: '/newproject',
+            name: 'NewProject',
+            component: NewProject
+        },
+        {
+            path: '/newtask',
+            name: 'NewTask',
+            component: NewTask
+        },
+        {
+            path: '/tasks',
+            name: 'Tasks',
+            component: Tasks
         }
     ]
 })

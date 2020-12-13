@@ -5,6 +5,7 @@ import it4it.backend.model.LoginUser
 import it4it.backend.user.NewUser
 import it4it.backend.repository.UserRepository
 import it4it.backend.user.User
+import it4it.backend.user.role.RoleService
 import it4it.backend.web.response.ResponseMessage
 import it4it.backend.web.response.SuccessfulSigninResponse
 import org.springframework.beans.factory.annotation.Autowired
@@ -42,12 +43,14 @@ class AuthController() {
     @Autowired
     lateinit var jwtProvider: JwtProvider
 
+    @Autowired
+    lateinit var roleService: RoleService
+
     @Value("\${ksvg.app.authCookieName}")
     lateinit var authCookieName: String
 
     @Value("\${ksvg.app.isCookieSecure}")
     var isCookieSecure: Boolean = true
-
 
     @PostMapping("/signin")
     fun authenticateUser(@Valid @RequestBody loginRequest: LoginUser, response: HttpServletResponse): ResponseEntity<*> {
@@ -68,11 +71,15 @@ class AuthController() {
             cookie.path = "/"
             response.addCookie(cookie)
 
+            val projectRoles = roleService.getUserManagerProjects(user)
             val userRole = SimpleGrantedAuthority("ROLE_USER")
             val userRoles = mutableListOf(userRole)
             if (user.admin){
                 val adminRole = SimpleGrantedAuthority("ROLE_ADMIN")
                 userRoles.add(adminRole)
+            }
+            projectRoles.forEach{
+                userRoles.plus(SimpleGrantedAuthority("MANAGER_"+it.project!!.key!!.toUpperCase()))
             }
             val authorities: List<GrantedAuthority> = userRoles.toList<GrantedAuthority>()
             return ResponseEntity.ok(SuccessfulSigninResponse(user.username, authorities))

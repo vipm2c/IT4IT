@@ -4,10 +4,12 @@ import it4it.backend.project.Project
 import it4it.backend.project.release.Release
 import it4it.backend.user.User
 import javax.persistence.*
+import javax.validation.constraints.Negative
 
 @Entity
 @Table(name="task")
 class Task (
+
         @Id
         @GeneratedValue(strategy = GenerationType.AUTO)
         val id: Long,
@@ -39,7 +41,7 @@ class Task (
 
         @OneToOne(cascade = [CascadeType.ALL])
         @JoinColumn(name = "reporter", referencedColumnName = "id")
-        var reporter: User?,
+        var reporter: User,
 
         @OneToOne(cascade = [CascadeType.ALL])
         @JoinColumn(name = "affected_version", referencedColumnName = "id")

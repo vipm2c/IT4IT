@@ -12,4 +12,6 @@ interface ProjectRepository: CrudRepository<Project, Long> {
 
     fun findProjectById(@Param("id") id: Long): Optional<Project>
 
+    override fun findAll():List<Project>
+
 }

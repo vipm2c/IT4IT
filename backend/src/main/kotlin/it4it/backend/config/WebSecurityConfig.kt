@@ -58,7 +58,7 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
         val configuration = CorsConfiguration()
-        configuration.allowedOrigins = Arrays.asList("http://localhost:8080", "http://localhost:8081", "https://kotlin-spring-vue-gradle-demo.herokuapp.com")
+        configuration.allowedOrigins = Arrays.asList("http://localhost:8080", "http://localhost:8081", "https://it4it.herokuapp.com")
         configuration.allowedHeaders = Arrays.asList("*")
         configuration.allowedMethods = Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS")
         configuration.allowCredentials = true

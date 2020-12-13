@@ -10,11 +10,8 @@ class Requirement (
         @GeneratedValue(strategy = GenerationType.AUTO)
         val id: Long,
 
-        @OneToOne(fetch = FetchType.EAGER)
-        @JoinTable(
-                name = "task",
-                joinColumns = [JoinColumn(name = "task", referencedColumnName = "id")]
-        )
+        @OneToOne(cascade = [CascadeType.ALL])
+        @JoinColumn(name = "task", referencedColumnName = "id")
         val task: Task?,
 
         @Column(nullable = true)

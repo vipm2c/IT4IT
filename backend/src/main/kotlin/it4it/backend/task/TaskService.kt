@@ -32,9 +32,11 @@ class TaskService {
     lateinit var projectRepository: ProjectRepository
 
     fun newTask(user: User, newTask: NewTask): Task{
-        val project = projectRepository.findProjectById(newTask.project!!).get()
+        print(user.username)
+        val reporter = userRepository.findByUsername(user.username!!).get()
+        val project = projectRepository.findProjectByKey(newTask.project!!).get()
         val status = taskStatusRepository.findById(2).get()
-        val assignee = userRepository.findById(newTask.assignee!!).get()
+        val assignee = userRepository.findByUsername(newTask.assignee!!).get()
         project.count = project.count?.plus(1)
         projectRepository.save(project)
         val task = Task(
@@ -46,7 +48,7 @@ class TaskService {
                 "${project.key}-${project.count}",
                 status,
                 assignee,
-                user,
+                reporter,
                 null
         )
         if (newTask.fixVersion != null){
@@ -61,6 +63,7 @@ class TaskService {
                 task.affectedVersion = affectedVersion.get()
             }
         }
+        taskRepository.save(task)
         return task
     }
 
@@ -72,7 +75,7 @@ class TaskService {
             }
         }
         if (newTask.assignee != null) {
-            val assignee = userRepository.findById(newTask.assignee!!)
+            val assignee = userRepository.findByUsername(newTask.assignee!!)
             if(assignee.isPresent) {
                 task.assignee = assignee.get()
             }
@@ -95,6 +98,7 @@ class TaskService {
         if ((newTask.description != null) and (newTask.description != task.description) ){
             task.description = newTask.description
         }
+        taskRepository.save(task)
         return task
     }
 

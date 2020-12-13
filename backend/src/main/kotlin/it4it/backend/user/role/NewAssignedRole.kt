@@ -4,13 +4,13 @@ import com.fasterxml.jackson.annotation.JsonProperty
 
 class NewAssignedRole {
 
-    @JsonProperty("name")
+    @JsonProperty("role")
     var role: Long? = null
 
-    @JsonProperty("username")
+    @JsonProperty("user")
     var user: String? = null
 
-    @JsonProperty("email")
+    @JsonProperty("project")
     var project: String? = null
 
     constructor(){}
