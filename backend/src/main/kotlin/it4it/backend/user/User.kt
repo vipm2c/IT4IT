@@ -28,7 +28,6 @@ data class User(
         @Column(nullable = true)
         var admin: Boolean
 
-
 )
 {
         fun setCredential(cred: String?){

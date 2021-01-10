@@ -149,7 +149,7 @@
         </div>
       </b-modal>
 
-      <b-modal id="editModal" :title="infoModal.title" v-on:ok="edit(infoModal.row)" v-on:cancel="resetInfoModal" @hide="resetInfoModal">
+      <b-modal id="editModal" :title="infoModal.title" v-on:ok="edit(infoModal.row)" v-on:cancel="resetInfoModal" @hide="resetInfoModal" hide-footer>
         <div>
           <div>
             <div class="mt-2">Project</div>
