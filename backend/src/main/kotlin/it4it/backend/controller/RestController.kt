@@ -6,6 +6,7 @@ import it4it.backend.project.Project
 import it4it.backend.project.ProjectRepository
 import it4it.backend.project.ProjectService
 import it4it.backend.project.release.ReleaseRepository
+import it4it.backend.project.release.ReleaseService
 import it4it.backend.repository.UserRepository
 import it4it.backend.task.*
 import it4it.backend.task.link.LinkRepository
@@ -63,6 +64,12 @@ class RestController() {
 
     @Autowired
     lateinit var projectService: ProjectService
+
+    @Autowired
+    lateinit var releaseService: ReleaseService
+
+    @Autowired
+    lateinit var requirementService: RequirementService
 
     @GetMapping("/project/all")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
@@ -300,6 +307,44 @@ class RestController() {
         else{
             ResponseEntity(ResponseMessage("Task is not updated!"),HttpStatus.BAD_REQUEST)
         }
+    }
+
+    @GetMapping("/task/{taskId}/requirements")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @ResponseBody
+    fun getTaskRequirements(authentication: Authentication, @PathVariable taskId: Long): ResponseEntity<*> {
+        val user: User = userRepository.findByUsername(authentication.name).get()
+        val task = taskService.getTaskById(taskId)
+        return if (task.isPresent) {
+            ResponseEntity.accepted().body(requirementService.getRequirements(task.get()))
+        }
+        else{
+            ResponseEntity(ResponseMessage("Task is not exist!"),HttpStatus.BAD_REQUEST)
+        }
+    }
+
+    @PostMapping("/task/{taskId}/requirements")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @ResponseBody
+    fun newTaskRequirements(authentication: Authentication, @Valid @RequestBody newRequirement: NewRequirement, @PathVariable taskId: Long): ResponseEntity<*> {
+        val user: User = userRepository.findByUsername(authentication.name).get()
+        val task = taskService.getTaskById(taskId)
+        return if (task.isPresent) {
+            requirementService.newRequirement(task.get(),newRequirement)
+            ResponseEntity.accepted().body(requirementService.getRequirements(task.get()))
+        }
+        else{
+            ResponseEntity(ResponseMessage("Task is not exist!"),HttpStatus.BAD_REQUEST)
+        }
+    }
+
+    @DeleteMapping("/task/{taskId}/requirements/{reqId}")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @ResponseBody
+    fun deleteTaskRequirements(authentication: Authentication, @PathVariable taskId: Long, @PathVariable reqId: Long): ResponseEntity<*> {
+        val task = taskService.getTaskById(taskId)
+        requirementService.deleteRequirement(reqId)
+        return ResponseEntity.accepted().body(requirementService.getRequirements(task.get()))
     }
 
     @GetMapping("/user/all")

@@ -10,10 +10,11 @@ class Requirement (
         @GeneratedValue(strategy = GenerationType.AUTO)
         val id: Long,
 
-        @OneToOne(cascade = [CascadeType.ALL])
+        @OneToOne(cascade = [CascadeType.REFRESH])
         @JoinColumn(name = "task", referencedColumnName = "id")
         val task: Task?,
 
         @Column(nullable = true)
         val reqId: Long?
+
 )

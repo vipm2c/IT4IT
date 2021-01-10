@@ -145,6 +145,20 @@
             <div class="mt-2">Affected Version</div>
             <b-form-select disabled placeholder="Affected Version" v-model="infoModal.affectedVersion" :options="infoModal.releases" />
             <br>
+
+            <br>
+            <b-table
+                show-empty
+                small
+                stacked="md"
+                :items="infoModal.requirements.items"
+                :fields="infoModal.requirements.fields"
+                :fixed=true
+                :sort-by.sync="sortBy"
+                :sort-desc.sync="sortDesc"
+                :sort-direction="sortDirection"
+            >
+            </b-table>
           </div>
         </div>
       </b-modal>
@@ -152,32 +166,67 @@
       <b-modal id="editModal" :title="infoModal.title" v-on:ok="edit(infoModal.row)" v-on:cancel="resetInfoModal" @hide="resetInfoModal" hide-footer>
         <div>
           <div>
-            <div class="mt-2">Project</div>
-            <b-form-select disabled placeholder="Project" v-model="infoModal.project" :options="infoModal.projects" v-on:change="loadFieldsContent(infoModal.project)" />
+            <b-form @submit="edit()" @reset="resetInfoModal()">
+              <div class="mt-2">Project</div>
+              <b-form-select disabled placeholder="Project" v-model="infoModal.project" :options="infoModal.projects" v-on:change="loadFieldsContent(infoModal.project)" />
 
-            <div class="mt-2">Status</div>
-            <b-form-select required placeholder="Status" v-model="infoModal.status" :options="infoModal.statuses" />
+              <div class="mt-2">Status</div>
+              <b-form-select placeholder="Status" v-model="infoModal.status" :options="infoModal.statuses" required />
 
-            <div class="mt-2">Summary</div>
-            <b-form-input required type="text" placeholder="Summary" v-model="infoModal.summary" />
+              <div class="mt-2">Summary</div>
+              <b-form-input type="text" placeholder="Summary" v-model="infoModal.summary" required />
 
-            <div class="mt-2">Description</div>
-            <b-form-textarea type="text" placeholder="Description" v-model="infoModal.description" rows="3" max-rows="6" />
+              <div class="mt-2">Description</div>
+              <b-form-textarea type="text" placeholder="Description" v-model="infoModal.description" rows="3" max-rows="6" />
 
-            <div class="mt-2">Assignee</div>
-            <b-form-select placeholder="Assignee" v-model="infoModal.assignee" :options="infoModal.users" />
+              <div class="mt-2">Assignee</div>
+              <b-form-select placeholder="Assignee" v-model="infoModal.assignee" :options="infoModal.users" />
 
-            <div class="mt-2">Reporter</div>
-            <b-form-select disabled placeholder="Assignee" v-model="infoModal.reporter" :options="infoModal.users" />
+              <div class="mt-2">Reporter</div>
+              <b-form-select disabled placeholder="Assignee" v-model="infoModal.reporter" :options="infoModal.users" />
 
-            <div class="mt-2">Fix Version</div>
-            <b-form-select placeholder="Fix Version" v-model="infoModal.fixVersion" :options="infoModal.releases" />
+              <div class="mt-2">Fix Version</div>
+              <b-form-select placeholder="Fix Version" v-model="infoModal.fixVersion" :options="infoModal.releases" />
 
-            <div class="mt-2">Affected Version</div>
-            <b-form-select placeholder="Affected Version" v-model="infoModal.affectedVersion" :options="infoModal.releases" />
-            <br>
+              <div class="mt-2">Affected Version</div>
+              <b-form-select placeholder="Affected Version" v-model="infoModal.affectedVersion" :options="infoModal.releases" />
+
+              <br>
+              <div class="mt-2">
+                <b-button v-b-modal.addRequirement size="sm">Add requirement</b-button>
+              </div>
+              <div class="mt-2">Requirements</div>
+              <b-table
+                  show-empty
+                  small
+                  stacked="md"
+                  :items="infoModal.requirements.items"
+                  :fields="infoModal.requirements.fields"
+                  :fixed=true
+                  :sort-by.sync="sortBy"
+                  :sort-desc.sync="sortDesc"
+                  :sort-direction="sortDirection"
+              >
+                <template #cell(actions)="row">
+                  <b-button size="sm" @click="deleteRequirement(row.item.id)" class="mr-1">
+                    Delete
+                  </b-button>
+                </template>
+              </b-table>
+              <br>
+
+              <b-button type="submit" variant="primary" v-on:click="edit()">Ok</b-button>
+              <b-button type="reset" variant="danger">Reset</b-button>
+            </b-form>
           </div>
         </div>
+      </b-modal>
+
+      <b-modal id="addRequirement" :title="infoModal.requirements.newRequirementTitle" v-on:ok="addRequirement()" @hide="resetRequirementModal()" ok-only>
+        <b-form>
+          <div class="mt-2">Summary</div>
+          <b-form-input type="number" placeholder="Requirement Id" v-model="infoModal.requirements.newRequirementId" required />
+        </b-form>
       </b-modal>
     </b-container>
 
@@ -212,6 +261,7 @@ export default {
         id: 'info-modal',
         title: '',
         content: '',
+        task: null,
         taskId:null,
         status:null,
         statuses:[],
@@ -223,6 +273,15 @@ export default {
         reporter:'',
         fixVersion:null,
         affectedVersion: null,
+        requirements:{
+          items:[],
+          fields: [
+            { key: 'reqId', label: 'Requirement', sortable: true, sortDirection: 'asc'},
+            { key: 'actions', label: 'Actions' }
+          ],
+          newRequirementId: null,
+          newRequirementTitle: "Add Requirement"
+        }
       }
     }
   },
@@ -251,6 +310,27 @@ export default {
           .catch(error => {
             console.log('ERROR: ' + error.response);
           })
+    },
+    addRequirement(){
+      console.log("addRequirement")
+      let body = {
+        task: this.infoModal.task.id,
+        reqId: this.infoModal.requirements.newRequirementId
+      }
+      console.log(body)
+      AXIOS.post('/task/'+this.infoModal.taskId+'/requirements', body)
+          .then(response => {
+            console.log(response)
+          })
+          .catch(error => {
+            console.log('ERROR: ' + error.response.message);
+          })
+      this.resetRequirementModal()
+    },
+    resetRequirementModal(){
+      this.infoModal.requirements.newRequirementId = null
+      this.$bvModal.hide('addRequirement')
+      this.loadTaskRequirements(this.infoModal.task.id)
     },
     loadFieldsContent(projectKey){
       AXIOS.get('/project/'+projectKey+"/users")
@@ -311,6 +391,16 @@ export default {
             this.showAlert();
           });
     },
+    deleteRequirement(reqId){
+      AXIOS.delete('/task/'+this.infoModal.taskId+'/requirements/'+reqId)
+          .then(response => {
+            console.log("Requirements: "+response.data)
+            this.infoModal.requirements.items = response.data
+          })
+          .catch(error => {
+            console.log('ERROR: ' + error.response.data);
+          })
+    },
     info(item) {
       this.loadFieldsContent(item.project.key)
       AXIOS.get('/project/all')
@@ -327,7 +417,8 @@ export default {
           .catch(error => {
             console.log('ERROR: ' + error.response);
           })
-
+      this.loadTaskRequirements(item.id)
+      this.infoModal.task = item
       this.infoModal.title = '('+item.key+') '+item.summary
       this.infoModal.taskId = item.id
       this.infoModal.project = item.project.key
@@ -347,6 +438,16 @@ export default {
         this.infoModal.fixVersion = item.fixVersion.id
       }
     },
+    loadTaskRequirements(taskId){
+      AXIOS.get('/task/'+taskId+'/requirements')
+          .then(response => {
+            console.log("Requirements: "+response.data)
+            this.infoModal.requirements.items = response.data
+          })
+          .catch(error => {
+            console.log('ERROR: ' + error.response.data);
+          })
+    },
     newAssignedRole(user, role, project) {
       const body = {
         user: user,
@@ -364,23 +465,31 @@ export default {
       this.resetUserModal()
     },
     edit() {
-      const body = {
-        summary: this.infoModal.summary,
-        status: this.infoModal.status,
-        description: this.infoModal.description,
-        assignee: this.infoModal.assignee,
-        fixVersion: this.infoModal.fixVersion,
-        affectedVersion: this.infoModal.affectedVersion
-      };
-      AXIOS.put('/task/'+this.infoModal.taskId, body)
-          .then(response => {
-            console.log(response)
-            this.loadUserContent();
-          })
-          .catch(error => {
-            console.log('ERROR: ' + error.response);
-          })
-      this.resetInfoModal()
+      if (this.infoModal.summary === '' || this.infoModal.summary == null){
+        console.log("response")
+      }
+      else if(this.infoModal.status === '' || this.infoModal.status == null){
+        console.log("response")
+      }
+      else {
+        const body = {
+          summary: this.infoModal.summary,
+          status: this.infoModal.status,
+          description: this.infoModal.description,
+          assignee: this.infoModal.assignee,
+          fixVersion: this.infoModal.fixVersion,
+          affectedVersion: this.infoModal.affectedVersion
+        };
+        AXIOS.put('/task/' + this.infoModal.taskId, body)
+            .then(response => {
+              console.log(response)
+              this.loadUserContent();
+            })
+            .catch(error => {
+              console.log('ERROR: ' + error.response);
+            })
+        this.resetInfoModal()
+      }
     },
     resetInfoModal() {
       this.infoModal.title = ''
@@ -399,6 +508,7 @@ export default {
       this.infoModal.status = null
       this.infoModal.statuses = []
       this.infoModal.taskId = null
+      this.$bvModal.hide('editModal')
     },
     onFiltered(filteredItems) {
       // Trigger pagination to update the number of buttons/pages due to filtering

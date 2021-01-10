@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 import org.springframework.web.bind.annotation.RequestBody
+import java.util.*
 import javax.validation.Valid
 
 @Service
@@ -104,6 +105,14 @@ class TaskService {
 
     fun save(task: Task){
         taskRepository.save(task)
+    }
+
+    fun getTaskByKey(taskKey: String): Optional<Task>{
+        return taskRepository.findByKey(taskKey)
+    }
+
+    fun getTaskById(taskId: Long): Optional<Task> {
+        return taskRepository.findById(taskId)
     }
 
 
