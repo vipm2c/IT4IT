@@ -9,6 +9,7 @@ import Projects from '@/components/Projects'
 import NewProject from '@/components/NewProject'
 import NewTask from '@/components/NewTask'
 import Tasks from "@/components/Tasks"
+import Users from "@/components/EditUsers"
 
 Vue.use(Router)
 
@@ -59,6 +60,11 @@ export default new Router({
             path: '/tasks',
             name: 'Tasks',
             component: Tasks
+        },
+        {
+            path: '/users',
+            name: 'Users',
+            component: Users
         }
     ]
 })

@@ -149,8 +149,18 @@
 
       <b-modal id="editModal" :title="infoModal.title" v-on:ok="edit(infoModal.row)" v-on:cancel="resetInfoModal" @hide="resetInfoModal">
           <div>
+            <div>
+              <b-alert
+                  :show="dismissCountDown"
+                  dismissible
+                  variant="danger"
+                  @dismissed="dismissCountDown=0"
+                  @dismiss-count-down="countDownChanged"
+              > {{ alertMessage }}
+              </b-alert>
+            </div>
               <div>
-                <b-form-input type="text" placeholder="Project Name" v-model="infoModal.row.name" />
+                <b-form-input type="text" required placeholder="Project Name" v-model="infoModal.row.name" />
                 <div class="mt-2"></div>
                 <b-form-input type="text" placeholder="Description" v-model="infoModal.row.description" />
                 <div class="mt-2"></div>
@@ -225,7 +235,11 @@ export default {
         project: '',
         users: [],
         roles: []
-      }
+      },
+      dismissSecs: 5,
+      dismissCountDown: 0,
+      alertMessage: '',
+      successfullyCreated: false
     }
   },
   computed: {
@@ -351,23 +365,29 @@ export default {
       this.resetUserModal()
     },
     edit(item) {
-      const body = {
-        name: item.name,
-        description: item.description,
-        key: item.key,
-        spec: item.spec,
-        archived: item.archived
-      };
-      AXIOS.put('/project/'+item.key, body)
-          .then(response => {
-            console.log(response)
-            this.loadUserContent();
-          })
-          .catch(error => {
-            console.log('ERROR: ' + error.response);
-          })
-      console.log("Редактируем проект "+item.key)
-      this.resetInfoModal()
+      if (this.$data.infoModal.row.name === '' || this.$data.infoModal.row.name == null) {
+        this.$data.alertMessage = 'Please, fill "Project Name" field';
+        this.showAlert()
+        this.infoModal.row.archived = true
+      } else {
+        const body = {
+          name: item.name,
+          description: item.description,
+          key: item.key,
+          spec: item.spec,
+          archived: item.archived
+        };
+        AXIOS.put('/project/' + item.key, body)
+            .then(response => {
+              console.log(response)
+              this.loadUserContent();
+            })
+            .catch(error => {
+              console.log('ERROR: ' + error.response);
+            })
+        console.log("Редактируем проект " + item.key)
+        this.resetInfoModal()
+      }
     },
     resetInfoModal() {
       this.infoModal.title = ''
@@ -391,6 +411,12 @@ export default {
       // Trigger pagination to update the number of buttons/pages due to filtering
       this.totalRows = filteredItems.length
       this.currentPage = 1
+    },
+    countDownChanged(dismissCountDown) {
+      this.dismissCountDown = dismissCountDown
+    },
+    showAlert() {
+      this.dismissCountDown = this.dismissSecs
     }
   }
 }

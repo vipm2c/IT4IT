@@ -315,20 +315,17 @@ class RestController() {
         }
     }
 
-    @PostMapping("/user/{username}")
+    @PutMapping("/user/{username}")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @ResponseBody
     fun updateUser(authentication: Authentication, @PathVariable username: String, @Valid @RequestBody newUser: NewUser): ResponseEntity<*> {
         val user: User = userRepository.findByUsername(authentication.name).get()
-        val candidateUser = userRepository.findByUsername(authentication.name)
+        val candidateUser = userRepository.findByUsername(username)
         return if (candidateUser.isPresent) {
             if (user.admin) {
                 updateUserObject(candidateUser,newUser)
                 ResponseEntity.accepted().body(userRepository.findByUsername(username).get())
             } else{
-                if (user.username == newUser.username){
-                    updateUserObject(candidateUser,newUser)
-                }
                 ResponseEntity.accepted().body(userRepository.findByUsername(username).get())
             }
         } else {
@@ -394,8 +391,8 @@ class RestController() {
         if ((newUser.email != null) and (newUser.email != updateUser.email)) {
             updateUser.email = newUser.email
         }
-        if ((newUser.credential != null) and (newUser.credential != updateUser.credential)) {
-            updateUser.credential = newUser.credential
+        if (newUser.credential != null) {
+            updateUser.setCredential(newUser.credential)
         }
         if (newUser.admin != updateUser.admin) {
             updateUser.admin = newUser.admin

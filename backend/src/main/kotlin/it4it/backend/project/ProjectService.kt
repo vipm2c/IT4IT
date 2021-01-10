@@ -38,6 +38,7 @@ class ProjectService {
                 if (it.role.name == "Manager"){
                     it.project.role = "manager"
                 }
+
                 cp.add(it.project)
             }
             projects = cp.toList<Project>()

@@ -20,7 +20,7 @@ data class User(
         var email: String?,
 
         @Column(nullable = true)
-        var credential: String?,
+        private var credential: String?,
 
         @Column(nullable = true)
         var active: Boolean,
@@ -28,4 +28,14 @@ data class User(
         @Column(nullable = true)
         var admin: Boolean
 
+
 )
+{
+        fun setCredential(cred: String?){
+                this.credential = cred
+        }
+
+        fun getCredential(): String{
+                return this.credential!!
+        }
+}

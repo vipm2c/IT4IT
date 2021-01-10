@@ -28,12 +28,13 @@
         </div>
         <div>
           <div class="mt-2">Project</div>
-          <b-form-select placeholder="Project" v-model="project" :options="projects" v-on:change="loadFieldContent(project)" />
+          <b-form-select required placeholder="Project" v-model="project" :options="projects" v-on:change="loadFieldContent(project)" />
 
           <div class="mt-2">Summary</div>
-          <b-form-input type="text" placeholder="Summary" v-model="summary" />
+          <b-form-input required type="text" placeholder="Summary" v-model="summary" />
 
           <div class="mt-2">Description</div>
+          <b-form-textarea type="text" placeholder="Description" v-model="description" rows="3" max-rows="6" />
 
           <div class="mt-2">Assignee</div>
           <b-form-select placeholder="Assignee" v-model="assignee" :options="users" />
@@ -71,8 +72,10 @@ export default {
       fixVersion: null,
       assignee: '',
       affectedVersion: null,
-      successfullyCreated: false,
-      dismissSecs: 0
+      dismissSecs: 5,
+      dismissCountDown: 0,
+      alertMessage: '',
+      successfullyCreated: false
     }
   },
   mounted() {

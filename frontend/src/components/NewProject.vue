@@ -27,10 +27,10 @@
           </b-alert>
         </div>
         <div>
-          <b-form-input type="text" placeholder="Project Name" v-model="name" />
+          <b-form-input type="text" required placeholder="Project Name" v-model="name" />
           <div class="mt-2"></div>
 
-          <b-form-input type="text" placeholder="Project Key" v-model="key" />
+          <b-form-input type="text" required placeholder="Project Key" v-model="key" />
           <div class="mt-2"></div>
 
           <b-form-input type="text" placeholder="Description" v-model="description" />
@@ -59,8 +59,10 @@ export default {
       key: '',
       description: '',
       spec: '',
-      successfullyCreated: false,
-      dismissSecs: 0
+      dismissSecs: 5,
+      dismissCountDown: 0,
+      alertMessage: '',
+      successfullyCreated: false
     }
   },
   methods: {
@@ -72,7 +74,7 @@ export default {
         this.$data.alertMessage = 'Please, fill "Project Key" field';
         this.showAlert();
       } else {
-        var newProject = {
+        const newProject = {
           'name': this.$data.name,
           'key': this.$data.key,
           'description': this.$data.description,

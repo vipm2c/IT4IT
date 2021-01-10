@@ -7,6 +7,7 @@
         <b-navbar-nav>
           <router-link to="/projects" class="nav-link text-light" v-if="this.$store.getters.isAuthenticated">Projects</router-link>
           <router-link to="/tasks" class="nav-link text-light" v-if="this.$store.getters.isAuthenticated">Tasks</router-link>
+          <router-link to="/users" class="nav-link text-light" v-if="this.$store.getters.isAuthenticated  && this.$store.getters.isAdmin">Users</router-link>
           <b-nav-item-dropdown right v-if="this.$store.getters.isAuthenticated">
             <!-- Using 'button-content' slot -->
             <template #button-content>

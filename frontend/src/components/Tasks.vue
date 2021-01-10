@@ -40,6 +40,7 @@
             <b-form-checkbox-group v-model="filterOn" class="mt-1">
               <b-form-checkbox value="key">Key</b-form-checkbox>
               <b-form-checkbox value="name">Project Name</b-form-checkbox>
+              <b-form-checkbox value="assignee">Assignee</b-form-checkbox>
               <b-form-checkbox value="archived">Archived</b-form-checkbox>
             </b-form-checkbox-group>
           </b-form-group>
@@ -98,6 +99,10 @@
           {{ row.value }}
         </template>
 
+        <template #cell(assignee)="row">
+          {{ row.value.name }}
+        </template>
+
         <template #cell(status)="row">
           {{ row.value.name }}
         </template>
@@ -151,10 +156,10 @@
             <b-form-select disabled placeholder="Project" v-model="infoModal.project" :options="infoModal.projects" v-on:change="loadFieldsContent(infoModal.project)" />
 
             <div class="mt-2">Status</div>
-            <b-form-select placeholder="Status" v-model="infoModal.status" :options="infoModal.statuses" />
+            <b-form-select required placeholder="Status" v-model="infoModal.status" :options="infoModal.statuses" />
 
             <div class="mt-2">Summary</div>
-            <b-form-input type="text" placeholder="Summary" v-model="infoModal.summary" />
+            <b-form-input required type="text" placeholder="Summary" v-model="infoModal.summary" />
 
             <div class="mt-2">Description</div>
             <b-form-textarea type="text" placeholder="Description" v-model="infoModal.description" rows="3" max-rows="6" />
@@ -191,6 +196,7 @@ export default {
         { key: 'key', label: 'Task Key', sortable: true, sortDirection: 'asc'},
         { key: 'summary', label: 'Summary', sortable: true },
         { key: 'status', label: 'Status', sortable: true },
+        { key: 'assignee', label: 'Assignee', sortable: true },
         { key: 'actions', label: 'Actions' }
       ],
       totalRows: 1,
