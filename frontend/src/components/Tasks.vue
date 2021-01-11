@@ -313,18 +313,20 @@ export default {
     },
     addRequirement(){
       console.log("addRequirement")
-      let body = {
-        task: this.infoModal.task.id,
-        reqId: this.infoModal.requirements.newRequirementId
+      if(this.infoModal.requirements.newRequirementId !== null || this.infoModal.requirements.newRequirementId !== "") {
+        let body = {
+          task: this.infoModal.task.id,
+          reqId: this.infoModal.requirements.newRequirementId
+        }
+        console.log(body)
+        AXIOS.post('/task/' + this.infoModal.taskId + '/requirements', body)
+            .then(response => {
+              console.log(response)
+            })
+            .catch(error => {
+              console.log('ERROR: ' + error.response.message);
+            })
       }
-      console.log(body)
-      AXIOS.post('/task/'+this.infoModal.taskId+'/requirements', body)
-          .then(response => {
-            console.log(response)
-          })
-          .catch(error => {
-            console.log('ERROR: ' + error.response.message);
-          })
       this.resetRequirementModal()
     },
     resetRequirementModal(){
