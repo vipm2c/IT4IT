@@ -114,7 +114,7 @@
           <b-button v-b-modal.editModal size="sm" @click="info(row.item)" class="mr-1">
             Edit
           </b-button>
-          <b-button size="sm" @click="setDeleteModal(row.item.id)" class="mr-1" variant="danger">
+          <b-button size="sm" @click="setDeleteModal(row.item.id)" class="mr-1" v-if="row.item.role === 'Manager'" variant="danger">
             Delete
           </b-button>
         </template>
@@ -317,22 +317,11 @@ export default {
   },
   methods: {
     loadUserContent() {
-      AXIOS.get('/task')
-          .then(response => {
-            console.log(response.data);
-            this.$data.items = response.data;
-            this.totalRows = response.data.length;
-          })
-          .catch(error => {
-            console.log('ERROR: ' + error.response);
-          })
       AXIOS.get('/user/currentUser')
           .then(response => {
             console.log(response.data);
             this.currentUser.user = response.data;
-            response.data.forEach( object =>{
-              console.log(object)
-            })
+            this.currentUser.admin = response.data.admin;
           })
           .catch(error => {
             console.log('ERROR: ' + error.response);
@@ -341,11 +330,41 @@ export default {
           .then(response => {
             console.log(response.data);
             this.currentUser.items = response.data;
-            response.data.forEach()
+            response.data.forEach( object =>{
+              if(object.role.name === "Manager"){
+                if (this.currentUser.manager === ""){
+                  this.currentUser.manager = object.project.key
+                }
+                else{
+                  this.currentUser.manager += ","+object.project.key
+                }
+              }
+            })
           })
           .catch(error => {
             console.log('ERROR: ' + error.response);
           })
+      console.log(this.currentUser)
+      AXIOS.get('/task')
+          .then(response => {
+            console.log(response.data);
+            this.$data.items = response.data;
+            this.totalRows = response.data.length;
+            this.$data.items.forEach(object=>{
+              if (this.currentUser.manager.match(/.*/+object.project.key+/.*/) || this.currentUser.admin === true){
+                object.role = "Manager"
+              }
+              else{
+                object.role = "User"
+              }
+            })
+          })
+          .catch(error => {
+            console.log('ERROR: ' + error.response);
+          })
+    },
+    checkRoles(pkey){
+      return !!(this.currentUser.manager.match(/.*/ + pkey + /.*/) || this.currentUser.admin === true);
     },
     addRequirement(){
       console.log("addRequirement")

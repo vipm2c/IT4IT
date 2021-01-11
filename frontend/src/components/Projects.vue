@@ -114,7 +114,7 @@
           <b-button v-b-modal.userModal size="sm" @click="user(row.item)" class="mr-1" v-if="row.item.role.match(/.*(admin|manager).*/)">
             Add user
           </b-button>
-          <b-button v-b-modal.userModal size="sm" @click="user(row.item)" class="mr-1" v-if="row.item.role.match(/.*(admin|manager).*/)" variant="danger">
+          <b-button v-b-modal.userModal size="sm" @click="user(row.item)" class="mr-1" v-if="row.item.role.match(/.*(admin).*/)" variant="danger">
             Delete
           </b-button>
         </template>
@@ -274,7 +274,8 @@ export default {
     loadUserContent() {
       AXIOS.get('/project/all')
           .then(response => {
-            this.$data.items = response.data;
+            console.log(response.data)
+            this.items = response.data;
             this.totalRows = response.data.length;
           })
           .catch(error => {

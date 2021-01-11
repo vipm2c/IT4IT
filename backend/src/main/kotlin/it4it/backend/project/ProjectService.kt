@@ -38,6 +38,9 @@ class ProjectService {
                 if (it.role.name == "Manager"){
                     it.project.role = "manager"
                 }
+                else{
+                    it.project.role = "user"
+                }
 
                 cp.add(it.project)
             }
