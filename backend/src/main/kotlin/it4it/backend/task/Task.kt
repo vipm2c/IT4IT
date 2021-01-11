@@ -14,7 +14,7 @@ class Task (
         @GeneratedValue(strategy = GenerationType.AUTO)
         val id: Long,
 
-        @OneToOne(cascade = [CascadeType.ALL])
+        @OneToOne(cascade = [CascadeType.REFRESH])
         @JoinColumn(name = "project", referencedColumnName = "id")
         val project: Project?,
 
@@ -24,26 +24,26 @@ class Task (
         @Column(nullable = true)
         var description: String?,
 
-        @OneToOne(cascade = [CascadeType.ALL])
+        @OneToOne(cascade = [CascadeType.REFRESH])
         @JoinColumn(name = "fix_version", referencedColumnName = "id")
         var fixVersion: Release?,
 
         @Column(nullable = true)
         val key: String?,
 
-        @OneToOne(cascade = [CascadeType.ALL])
+        @OneToOne(cascade = [CascadeType.REFRESH])
         @JoinColumn(name = "status", referencedColumnName = "id")
         var status: TaskStatus?,
 
-        @OneToOne(cascade = [CascadeType.ALL])
+        @OneToOne(cascade = [CascadeType.REFRESH])
         @JoinColumn(name = "assignee", referencedColumnName = "id")
         var assignee: User?,
 
-        @OneToOne(cascade = [CascadeType.ALL])
+        @OneToOne(cascade = [CascadeType.REFRESH])
         @JoinColumn(name = "reporter", referencedColumnName = "id")
         var reporter: User,
 
-        @OneToOne(cascade = [CascadeType.ALL])
+        @OneToOne(cascade = [CascadeType.REFRESH])
         @JoinColumn(name = "affected_version", referencedColumnName = "id")
         var affectedVersion: Release?
 )
