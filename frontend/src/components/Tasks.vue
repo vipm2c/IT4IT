@@ -264,8 +264,14 @@ export default {
       sortDirection: 'asc',
       filter: null,
       filterOn: [],
+      currentUser:{
+        user: null,
+        manager: "",
+        admin: false,
+        items:[]
+      },
       deleteModal:{
-        taskId:null
+        taskId: null
       },
       infoModal: {
         id: 'info-modal',
@@ -316,6 +322,26 @@ export default {
             console.log(response.data);
             this.$data.items = response.data;
             this.totalRows = response.data.length;
+          })
+          .catch(error => {
+            console.log('ERROR: ' + error.response);
+          })
+      AXIOS.get('/user/currentUser')
+          .then(response => {
+            console.log(response.data);
+            this.currentUser.user = response.data;
+            response.data.forEach( object =>{
+
+            })
+          })
+          .catch(error => {
+            console.log('ERROR: ' + error.response);
+          })
+      AXIOS.get('/user/currentUserRoles')
+          .then(response => {
+            console.log(response.data);
+            this.currentUser.items = response.data;
+            response.data.forEach()
           })
           .catch(error => {
             console.log('ERROR: ' + error.response);

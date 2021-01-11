@@ -6,6 +6,7 @@ import it4it.backend.user.NewUser
 import it4it.backend.repository.UserRepository
 import it4it.backend.user.User
 import it4it.backend.user.role.RoleService
+import it4it.backend.web.response.JwtResponse
 import it4it.backend.web.response.ResponseMessage
 import it4it.backend.web.response.SuccessfulSigninResponse
 import org.springframework.beans.factory.annotation.Autowired
@@ -82,7 +83,7 @@ class AuthController() {
                 userRoles.plus(SimpleGrantedAuthority("MANAGER_"+it.project!!.key!!.toUpperCase()))
             }
             val authorities: List<GrantedAuthority> = userRoles.toList<GrantedAuthority>()
-            return ResponseEntity.ok(SuccessfulSigninResponse(user.username, authorities))
+            return ResponseEntity.ok(JwtResponse(jwt, user.username, authorities))
         } else {
             return ResponseEntity(ResponseMessage("User not found!"),
                     HttpStatus.BAD_REQUEST)

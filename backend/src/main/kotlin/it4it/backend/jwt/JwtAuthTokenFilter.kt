@@ -52,12 +52,18 @@ class JwtAuthTokenFilter : OncePerRequestFilter() {
     }
 
     private fun getJwt(request: HttpServletRequest): String? {
-        for (cookie in request.cookies) {
-            if (cookie.name == authCookieName) {
-                return cookie.value
-            }
+        val authHeader = request.getHeader("Authorization")
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            return authHeader.replace("Bearer ", "")
         }
-        return null
+        else {
+            for (cookie in request.cookies) {
+                if (cookie.name == authCookieName) {
+                    return cookie.value
+                }
+            }
+            return null
+        }
     }
 
     companion object {

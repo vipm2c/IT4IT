@@ -80,6 +80,6 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter::class.java)
-        http.headers().cacheControl().disable()
+        //http.headers().cacheControl().disable()
     }
 }

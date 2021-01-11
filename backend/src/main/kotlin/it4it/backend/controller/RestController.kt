@@ -368,6 +368,22 @@ class RestController() {
         }
     }
 
+    @GetMapping("/user/currentUser")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @ResponseBody
+    fun getCurrentUser(authentication: Authentication): ResponseEntity<*> {
+        val user: User = userRepository.findByUsername(authentication.name).get()
+        return ResponseEntity.accepted().body(user)
+    }
+
+    @GetMapping("/user/currentUserRoles")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @ResponseBody
+    fun getCurrentUserRoles(authentication: Authentication): ResponseEntity<*> {
+        val user: User = userRepository.findByUsername(authentication.name).get()
+        return ResponseEntity.accepted().body(assignedRoleRepository.findAllByUser(user))
+    }
+
     @PutMapping("/user/{username}")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @ResponseBody

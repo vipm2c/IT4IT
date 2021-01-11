@@ -114,6 +114,9 @@
           <b-button v-b-modal.userModal size="sm" @click="user(row.item)" class="mr-1" v-if="row.item.role.match(/.*(admin|manager).*/)">
             Add user
           </b-button>
+          <b-button v-b-modal.userModal size="sm" @click="user(row.item)" class="mr-1" v-if="row.item.role.match(/.*(admin|manager).*/)" variant="danger">
+            Delete
+          </b-button>
         </template>
 
       </b-table>
@@ -185,6 +188,10 @@
         </div>
       </b-modal>
 
+      <b-modal id="deleteObject" :title='"Are you sure?"' v-on:ok="deleteProject()" @hide="resetDeleteModal()">
+        <div class="mt-2">This is permanent action</div>
+      </b-modal>
+
     </b-container>
 
   </div>
@@ -213,6 +220,9 @@ export default {
       sortDirection: 'asc',
       filter: null,
       filterOn: [],
+      deleteModal:{
+        pid:null
+      },
       infoModal: {
         id: 'info-modal',
         title: '',
@@ -270,6 +280,27 @@ export default {
           .catch(error => {
             console.log('ERROR: ' + error.response);
           })
+    },
+    deleteProject(){
+      if (this.deleteModal.pid != null) {
+        AXIOS.delete('/project/' + this.deleteModal.pid)
+            .then(response => {
+              console.log("task: " + response.data)
+              this.infoModal.requirements.items = response.data
+            })
+            .catch(error => {
+              console.log('ERROR: ' + error.response.message);
+            })
+
+        setTimeout(this.loadUserContent, 1000)
+      }
+    },
+    setDeleteModal(taskId){
+      this.deleteModal.taskId = taskId
+      this.$bvModal.show('deleteObject')
+    },
+    resetDeleteModal(){
+      this.deleteModal.pid = null
     },
     archive(item,action) {
       const header = {'Authorization': 'Bearer ' + this.$store.getters.getToken};
