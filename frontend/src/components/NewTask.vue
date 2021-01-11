@@ -7,49 +7,50 @@
           style="max-width: 20rem;"
           class="mb-2"
       >
-        <div>
-          <b-alert
-              :show="dismissCountDown"
-              dismissible
-              variant="danger"
-              @dismissed="dismissCountDown=0"
-              @dismiss-count-down="countDownChanged"
-          > {{ alertMessage }}
-          </b-alert>
-        </div>
-        <div>
-          <b-alert variant="success" :show="successfullyCreated">
-            You have been successfully create task!
-            <hr />
-            <router-link to="/tasks">
-              <b-button variant="primary">View Tasks</b-button>
-            </router-link>
-          </b-alert>
-        </div>
-        <div>
-          <div class="mt-2">Project</div>
-          <b-form-select required placeholder="Project" v-model="project" :options="projects" v-on:change="loadFieldContent(project)" />
+        <b-form>
+          <div>
+            <b-alert
+                :show="dismissCountDown"
+                dismissible
+                variant="danger"
+                @dismissed="dismissCountDown=0"
+                @dismiss-count-down="countDownChanged"
+            > {{ alertMessage }}
+            </b-alert>
+          </div>
+          <div>
+            <b-alert variant="success" :show="successfullyCreated">
+              You have been successfully create task!
+              <hr />
+              <router-link to="/tasks">
+                <b-button variant="primary">View Tasks</b-button>
+              </router-link>
+            </b-alert>
+          </div>
+          <div>
+            <div class="mt-2">Project</div>
+            <b-form-select required placeholder="Project" v-model="project" :options="projects" v-on:change="loadFieldContent(project)" />
 
-          <div class="mt-2">Summary</div>
-          <b-form-input required type="text" placeholder="Summary" v-model="summary" />
+            <div class="mt-2">Summary</div>
+            <b-form-input required type="text" placeholder="Summary" v-model="summary" />
 
-          <div class="mt-2">Description</div>
-          <b-form-textarea type="text" placeholder="Description" v-model="description" rows="3" max-rows="6" />
+            <div class="mt-2">Description</div>
+            <b-form-textarea type="text" placeholder="Description" v-model="description" rows="3" max-rows="6" />
 
-          <div class="mt-2">Assignee</div>
-          <b-form-select placeholder="Assignee" v-model="assignee" :options="users" />
+            <div class="mt-2">Assignee</div>
+            <b-form-select placeholder="Assignee" v-model="assignee" :options="users" />
 
-          <div class="mt-2">Fix Version</div>
-          <b-form-select placeholder="Fix Version" v-model="fixVersion" :options="releases" />
+            <div class="mt-2">Fix Version</div>
+            <b-form-select placeholder="Fix Version" v-model="fixVersion" :options="releases" />
 
-          <div class="mt-2">Affected Version</div>
-          <b-form-select placeholder="Affected Version" v-model="affectedVersion" :options="releases" />
-          <br>
-          <br>
+            <div class="mt-2">Affected Version</div>
+            <b-form-select placeholder="Affected Version" v-model="affectedVersion" :options="releases" />
+            <br>
+            <br>
 
-        </div>
-        <b-button v-on:click="create" variant="primary">Create</b-button>
-
+          </div>
+          <b-button v-on:click="create" variant="primary">Create</b-button>
+        </b-form>
       </b-card>
     </div>
   </div>

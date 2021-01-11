@@ -120,45 +120,48 @@
 
       <b-modal id="infoModal" :title="infoModal.title" ok-only v-on:ok="resetInfoModal"  @hide="resetInfoModal">
         <div>
-          <div>
-            <b-form-input type="text" disabled placeholder="Project Name" v-model="infoModal.row.name" />
-            <div class="mt-2"></div>
-            <b-form-input type="text" disabled placeholder="Project Key" v-model="infoModal.row.key" />
-            <div class="mt-2"></div>
-            <b-form-input type="text" disabled placeholder="Description" v-model="infoModal.row.description" />
-            <div class="mt-2"></div>
-            <b-form-input type="text" disabled placeholder="Spec" v-model="infoModal.row.spec" />
-            <div class="mt-2"></div>
-            <b-form-checkbox id="checkbox-1" disabled v-model="infoModal.row.archived" name="checkbox-1" >Archived</b-form-checkbox>
-            <div class="mt-2"></div>
-          </div>
-          <b-table
-              show-empty
-              small
-              stacked="md"
-              :items="infoModal.users"
-              :fields="infoModal.fields"
-              :fixed=true
-              :sort-by.sync="sortBy"
-              :sort-desc.sync="sortDesc"
-              :sort-direction="sortDirection"
-          >
-          </b-table>
+          <b-form>
+            <div>
+              <b-form-input type="text" disabled placeholder="Project Name" v-model="infoModal.row.name" />
+              <div class="mt-2"></div>
+              <b-form-input type="text" disabled placeholder="Project Key" v-model="infoModal.row.key" />
+              <div class="mt-2"></div>
+              <b-form-input type="text" disabled placeholder="Description" v-model="infoModal.row.description" />
+              <div class="mt-2"></div>
+              <b-form-input type="text" disabled placeholder="Spec" v-model="infoModal.row.spec" />
+              <div class="mt-2"></div>
+              <b-form-checkbox id="checkbox-1" disabled v-model="infoModal.row.archived" name="checkbox-1" >Archived</b-form-checkbox>
+              <div class="mt-2"></div>
+            </div>
+            <b-table
+                show-empty
+                small
+                stacked="md"
+                :items="infoModal.users"
+                :fields="infoModal.fields"
+                :fixed=true
+                :sort-by.sync="sortBy"
+                :sort-desc.sync="sortDesc"
+                :sort-direction="sortDirection"
+            >
+            </b-table>
+          </b-form>
         </div>
       </b-modal>
 
       <b-modal id="editModal" :title="infoModal.title" v-on:ok="edit(infoModal.row)" v-on:cancel="resetInfoModal" @hide="resetInfoModal">
           <div>
-            <div>
-              <b-alert
-                  :show="dismissCountDown"
-                  dismissible
-                  variant="danger"
-                  @dismissed="dismissCountDown=0"
-                  @dismiss-count-down="countDownChanged"
-              > {{ alertMessage }}
-              </b-alert>
-            </div>
+            <b-form>
+              <div>
+                <b-alert
+                    :show="dismissCountDown"
+                    dismissible
+                    variant="danger"
+                    @dismissed="dismissCountDown=0"
+                    @dismiss-count-down="countDownChanged"
+                > {{ alertMessage }}
+                </b-alert>
+              </div>
               <div>
                 <b-form-input type="text" required placeholder="Project Name" v-model="infoModal.row.name" />
                 <div class="mt-2"></div>
@@ -166,7 +169,8 @@
                 <div class="mt-2"></div>
                 <b-form-input type="text" placeholder="Spec" v-model="infoModal.row.spec" />
                 <div class="mt-2"></div>
-          </div>
+              </div>
+            </b-form>
         </div>
       </b-modal>
 

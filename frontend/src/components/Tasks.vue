@@ -114,6 +114,9 @@
           <b-button v-b-modal.editModal size="sm" @click="info(row.item)" class="mr-1">
             Edit
           </b-button>
+          <b-button size="sm" @click="setDeleteModal(row.item.id)" class="mr-1" variant="danger">
+            Delete
+          </b-button>
         </template>
 
       </b-table>
@@ -228,6 +231,10 @@
           <b-form-input type="number" placeholder="Requirement Id" v-model="infoModal.requirements.newRequirementId" required />
         </b-form>
       </b-modal>
+
+      <b-modal id="deleteObject" :title='"Are you sure?"' v-on:ok="deleteTask()" @hide="resetDeleteModal()">
+        <div class="mt-2">Are you sure?</div>
+      </b-modal>
     </b-container>
 
   </div>
@@ -257,6 +264,9 @@ export default {
       sortDirection: 'asc',
       filter: null,
       filterOn: [],
+      deleteModal:{
+        taskId:null
+      },
       infoModal: {
         id: 'info-modal',
         title: '',
@@ -334,6 +344,14 @@ export default {
       this.$bvModal.hide('addRequirement')
       this.loadTaskRequirements(this.infoModal.task.id)
     },
+    setDeleteModal(taskId){
+      this.deleteModal.taskId = taskId
+      this.$bvModal.show('deleteObject')
+    },
+    resetDeleteModal(){
+      this.deleteModal.taskId = null
+      this.$bvModal.hide('deleteObject')
+    },
     loadFieldsContent(projectKey){
       AXIOS.get('/project/'+projectKey+"/users")
           .then(response => {
@@ -402,6 +420,20 @@ export default {
           .catch(error => {
             console.log('ERROR: ' + error.response.data);
           })
+    },
+    deleteTask(){
+      if (this.deleteModal.taskId != null) {
+        AXIOS.delete('/task/' + this.deleteModal.taskId)
+            .then(response => {
+              console.log("task: " + response.data)
+              this.infoModal.requirements.items = response.data
+            })
+            .catch(error => {
+              console.log('ERROR: ' + error.response.message);
+            })
+
+        setTimeout(this.loadUserContent, 1000)
+      }
     },
     info(item) {
       this.loadFieldsContent(item.project.key)

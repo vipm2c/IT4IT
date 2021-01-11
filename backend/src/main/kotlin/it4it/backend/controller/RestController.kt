@@ -309,6 +309,14 @@ class RestController() {
         }
     }
 
+    @DeleteMapping("/task/{taskId}")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @ResponseBody
+    fun deleteTask(authentication: Authentication, @PathVariable taskId: Long): ResponseEntity<*> {
+        val user: User = userRepository.findByUsername(authentication.name).get()
+        return ResponseEntity(ResponseMessage(taskService.deleteTaskById(taskId)),HttpStatus.OK)
+    }
+
     @GetMapping("/task/{taskId}/requirements")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @ResponseBody

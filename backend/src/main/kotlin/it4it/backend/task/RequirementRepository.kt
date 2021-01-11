@@ -9,6 +9,7 @@ import javax.transaction.Transactional
 
 @Repository
 interface RequirementRepository: CrudRepository<Requirement, Long> {
+
     fun findAllByTask(task:Task): List<Requirement>
 
     fun findByReqIdAndTask(reqId:Long,task:Task): Optional<Requirement>

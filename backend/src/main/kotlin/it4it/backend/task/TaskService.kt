@@ -32,6 +32,9 @@ class TaskService {
     @Autowired
     lateinit var projectRepository: ProjectRepository
 
+    @Autowired
+    lateinit var requirementService: RequirementService
+
     fun newTask(user: User, newTask: NewTask): Task{
         print(user.username)
         val reporter = userRepository.findByUsername(user.username!!).get()
@@ -113,6 +116,18 @@ class TaskService {
 
     fun getTaskById(taskId: Long): Optional<Task> {
         return taskRepository.findById(taskId)
+    }
+
+    fun deleteTaskById(taskId: Long): String{
+        val task = taskRepository.findById(taskId)
+        return if (task.isPresent) {
+            requirementService.deleteRequirementByTask(task.get())
+            taskRepository.delete(task.get())
+            "Task successfully deleted"
+        }
+        else{
+            "Task not found"
+        }
     }
 
 

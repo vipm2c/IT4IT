@@ -21,4 +21,13 @@ class RequirementService {
     fun deleteRequirement(reqId: Long){
         requirementRepository.delete(requirementRepository.findById(reqId).get())
     }
+
+    fun deleteRequirementByTask(task:Task){
+        val requirements = requirementRepository.findAllByTask(task)
+        if (requirements.count() > 0) {
+            requirements.forEach {
+                requirementRepository.delete(it)
+            }
+        }
+    }
 }
