@@ -331,7 +331,7 @@ export default {
             console.log(response.data);
             this.currentUser.user = response.data;
             response.data.forEach( object =>{
-
+              console.log(object)
             })
           })
           .catch(error => {
