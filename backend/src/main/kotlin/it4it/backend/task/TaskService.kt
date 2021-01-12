@@ -3,6 +3,7 @@ package it4it.backend.task
 import it4it.backend.project.ProjectRepository
 import it4it.backend.project.release.ReleaseRepository
 import it4it.backend.repository.UserRepository
+import it4it.backend.task.link.LinkService
 import it4it.backend.user.User
 import it4it.backend.web.response.ResponseMessage
 import org.springframework.beans.factory.annotation.Autowired
@@ -34,6 +35,9 @@ class TaskService {
 
     @Autowired
     lateinit var requirementService: RequirementService
+
+    @Autowired
+    lateinit var linkService: LinkService
 
     fun newTask(user: User, newTask: NewTask): Task{
         print(user.username)
@@ -121,6 +125,7 @@ class TaskService {
     fun deleteTaskById(taskId: Long): String{
         val task = taskRepository.findById(taskId)
         return if (task.isPresent) {
+            linkService.deleteAllLinksByTask(task.get())
             requirementService.deleteRequirementByTask(task.get())
             taskRepository.delete(task.get())
             "Task successfully deleted"

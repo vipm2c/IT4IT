@@ -162,6 +162,19 @@
                 :sort-direction="sortDirection"
             >
             </b-table>
+            <br>
+            <b-table
+                show-empty
+                small
+                stacked="md"
+                :items="infoModal.linkedIssues.tasks"
+                :fields="infoModal.linkedIssues.fields"
+                :fixed=true
+                :sort-by.sync="sortBy"
+                :sort-desc.sync="sortDesc"
+                :sort-direction="sortDirection"
+            >
+            </b-table>
           </div>
         </div>
       </b-modal>

@@ -40,4 +40,13 @@ class LinkService {
         linkRepository.deleteById(linkId)
     }
 
+    fun deleteAllLinksByTask(task:Task){
+        getInwardLinks(task).forEach {
+            linkRepository.delete(it)
+        }
+        getOutwardLinks(task).forEach {
+            linkRepository.delete(it)
+        }
+    }
+
 }
