@@ -233,7 +233,7 @@
                   :sort-direction="sortDirection"
               >
                 <template #cell(actions)="row">
-                  <b-button size="sm" @click="deleteLink(row.item.id)" class="mr-1">
+                  <b-button size="sm" @click="deleteLink(row.item.id)" class="mr-1" variant="danger">
                     Delete
                   </b-button>
                 </template>
@@ -466,6 +466,7 @@ export default {
       }
     },
     getLinkedTasks(){
+      this.infoModal.linkedIssues.tasks = []
       AXIOS.get('/task/'+this.infoModal.taskId+'/inwardLinks')
           .then(response => {
             console.log(response.data);
@@ -474,7 +475,8 @@ export default {
               let item = {
                 key: object.outward.key,
                 summary: object.outward.summary,
-                link: object.linkType.inwardName
+                link: object.linkType.inwardName,
+                id: object.id
               };
               console.log(item)
               this.infoModal.linkedIssues.tasks.push(item)
@@ -496,7 +498,8 @@ export default {
               const item = {
                 key: object.inward.key,
                 summary: object.inward.summary,
-                link: object.linkType.outwardName
+                link: object.linkType.outwardName,
+                id: object.id
               };
               console.log(item)
               this.infoModal.linkedIssues.tasks.push(item)

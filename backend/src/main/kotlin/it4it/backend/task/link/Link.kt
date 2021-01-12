@@ -15,11 +15,11 @@ class Link(
         @JoinColumn(name = "link_type", referencedColumnName = "id")
         val linkType: LinkType?,
 
-        @ManyToOne(cascade = [CascadeType.ALL])
-        @JoinColumn(name = "inward", referencedColumnName = "id", insertable = false, updatable = false)
+        @OneToOne(cascade = [CascadeType.REFRESH])
+        @JoinColumn(name = "inward", referencedColumnName = "id")
         val inward: Task?,
 
-        @ManyToOne(cascade = [CascadeType.ALL])
-        @JoinColumn(name = "outward", referencedColumnName = "id", insertable = false, updatable = false )
+        @OneToOne(cascade = [CascadeType.REFRESH])
+        @JoinColumn(name = "outward", referencedColumnName = "id")
         val outward: Task?
 )
