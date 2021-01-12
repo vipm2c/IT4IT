@@ -217,6 +217,28 @@
                 </template>
               </b-table>
               <br>
+              <div class="mt-2">
+                <b-button v-b-modal.addLink v-on:click="fillLinkFields()" size="sm">New link</b-button>
+              </div>
+              <div class="mt-2">Linked Tasks</div>
+              <b-table
+                  show-empty
+                  small
+                  stacked="md"
+                  :items="infoModal.linkedIssues.tasks"
+                  :fields="infoModal.linkedIssues.fields"
+                  :fixed=true
+                  :sort-by.sync="sortBy"
+                  :sort-desc.sync="sortDesc"
+                  :sort-direction="sortDirection"
+              >
+                <template #cell(actions)="row">
+                  <b-button size="sm" @click="deleteLink(row.item.id)" class="mr-1">
+                    Delete
+                  </b-button>
+                </template>
+              </b-table>
+              <br>
 
               <b-button type="submit" variant="primary" v-on:click="edit()">Ok</b-button>
               <b-button type="reset" variant="danger">Reset</b-button>
@@ -229,6 +251,15 @@
         <b-form>
           <div class="mt-2">Summary</div>
           <b-form-input type="number" placeholder="Requirement Id" v-model="infoModal.requirements.newRequirementId" required />
+        </b-form>
+      </b-modal>
+
+      <b-modal id="addLink" :title="infoModal.linkedIssues.title" v-on:ok="addLink()" @hide="resetLinkModal()">
+        <b-form>
+          <div class="mt-2">Task</div>
+          <b-form-select placeholder="Task" v-model="infoModal.linkedIssues.taskCandidate" :options="infoModal.linkedIssues.taskCandidates" />
+          <div class="mt-2">Link type</div>
+          <b-form-select placeholder="Link type" v-model="infoModal.linkedIssues.linkType" :options="infoModal.linkedIssues.linkTypes" />
         </b-form>
       </b-modal>
 
@@ -289,6 +320,20 @@ export default {
         reporter:'',
         fixVersion:null,
         affectedVersion: null,
+        linkedIssues:{
+          title:'Link task',
+          tasks:[],
+          taskCandidates:[],
+          linkTypes:[],
+          taskCandidate:null,
+          linkType:null,
+          fields:[
+            { key: 'key', label: 'Key', sortable: true, sortDirection: 'asc'},
+            { key: 'summary', label: 'Summary'},
+            { key: 'link', label: 'Link type'},
+            { key: 'actions', label: 'Actions' }
+          ]
+        },
         requirements:{
           items:[],
           fields: [
@@ -362,6 +407,116 @@ export default {
           .catch(error => {
             console.log('ERROR: ' + error.response);
           })
+    },
+    fillLinkFields(){
+      AXIOS.get('/links')
+          .then(response => {
+            console.log(response.data);
+            response.data.forEach(object => {
+              const item = {
+                value: object.id,
+                text: object.name
+              };
+              this.infoModal.linkedIssues.linkTypes.push(item)
+            })
+          }, error => {
+            this.$data.alertMessage = (error.response.data.message.length < 150) ? error.response.data.message : 'Request error. Please, report this error website owners'
+            this.showAlert();
+          })
+          .catch(error => {
+            console.log(error);
+            this.$data.alertMessage = 'Request error. Please, report this error website owners';
+            this.showAlert();
+          });
+      AXIOS.get('/task')
+          .then(response => {
+            console.log(response.data);
+            response.data.forEach(object => {
+              const item = {
+                value: object.id,
+                text: "("+object.key+")"+object.summary
+              };
+              this.infoModal.linkedIssues.taskCandidates.push(item)
+            })
+          }, error => {
+            this.$data.alertMessage = (error.response.data.message.length < 150) ? error.response.data.message : 'Request error. Please, report this error website owners'
+            this.showAlert();
+          })
+          .catch(error => {
+            console.log(error);
+            this.$data.alertMessage = 'Request error. Please, report this error website owners';
+            this.showAlert();
+          });
+    },
+    addLink(){
+      if(this.infoModal.linkedIssues.taskCandidate !== null || this.infoModal.linkedIssues.linkType !== null) {
+        let body = {
+          linkType: this.infoModal.linkedIssues.linkType,
+          outward: this.infoModal.taskId,
+          inward: this.infoModal.linkedIssues.taskCandidate
+        }
+        console.log(body)
+        AXIOS.post('/task/' + this.infoModal.taskId + '/link', body)
+            .then(response => {
+              console.log(response)
+            })
+            .catch(error => {
+              console.log('ERROR: ' + error.response.message);
+            })
+      }
+    },
+    getLinkedTasks(){
+      AXIOS.get('/task/'+this.infoModal.taskId+'/inwardLinks')
+          .then(response => {
+            console.log(response.data);
+            response.data.forEach(object => {
+              console.log(object)
+              let item = {
+                key: object.outward.key,
+                summary: object.outward.summary,
+                link: object.linkType.inwardName
+              };
+              console.log(item)
+              this.infoModal.linkedIssues.tasks.push(item)
+            })
+          }, error => {
+            this.$data.alertMessage = (error.response.data.message.length < 150) ? error.response.data.message : 'Request error. Please, report this error website owners'
+            this.showAlert();
+          })
+          .catch(error => {
+            console.log(error);
+            this.$data.alertMessage = 'Request error. Please, report this error website owners';
+            this.showAlert();
+          });
+      AXIOS.get('/task/'+this.infoModal.taskId+'/outwardLinks')
+          .then(response => {
+            console.log(response.data);
+            response.data.forEach(object => {
+              console.log(object)
+              const item = {
+                key: object.inward.key,
+                summary: object.inward.summary,
+                link: object.linkType.outwardName
+              };
+              console.log(item)
+              this.infoModal.linkedIssues.tasks.push(item)
+            })
+          }, error => {
+            this.$data.alertMessage = (error.response.data.message.length < 150) ? error.response.data.message : 'Request error. Please, report this error website owners'
+            this.showAlert();
+          })
+          .catch(error => {
+            console.log(error);
+            this.$data.alertMessage = 'Request error. Please, report this error website owners';
+            this.showAlert();
+          });
+    },
+    resetLinkModal(){
+      this.infoModal.linkedIssues.taskCandidates = []
+      this.infoModal.linkedIssues.linkTypes = []
+      this.infoModal.linkedIssues.linkType = null
+      this.infoModal.linkedIssues.taskCandidate = null
+      this.$bvModal.hide('addLink')
     },
     checkRoles(pkey){
       return !!(this.currentUser.manager.match(/.*/ + pkey + /.*/) || this.currentUser.admin === true);
@@ -466,6 +621,16 @@ export default {
             console.log('ERROR: ' + error.response.data);
           })
     },
+    deleteLink(reqId){
+      AXIOS.delete('/task/'+this.infoModal.taskId+'/requirements/'+reqId)
+          .then(response => {
+            console.log("Requirements: "+response.data)
+            this.infoModal.requirements.items = response.data
+          })
+          .catch(error => {
+            console.log('ERROR: ' + error.response.data);
+          })
+    },
     deleteTask(){
       if (this.deleteModal.taskId != null) {
         AXIOS.delete('/task/' + this.deleteModal.taskId)
@@ -516,6 +681,7 @@ export default {
       if(item.affectedVersion) {
         this.infoModal.fixVersion = item.fixVersion.id
       }
+      this.getLinkedTasks()
     },
     loadTaskRequirements(taskId){
       AXIOS.get('/task/'+taskId+'/requirements')

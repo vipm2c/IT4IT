@@ -11,7 +11,7 @@ class Link(
         @GeneratedValue(strategy = GenerationType.AUTO)
         val id: Long,
 
-        @OneToOne(cascade = [CascadeType.ALL])
+        @OneToOne(cascade = [CascadeType.REFRESH])
         @JoinColumn(name = "link_type", referencedColumnName = "id")
         val linkType: LinkType?,
 

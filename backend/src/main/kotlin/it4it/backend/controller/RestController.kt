@@ -10,7 +10,9 @@ import it4it.backend.project.release.ReleaseService
 import it4it.backend.repository.UserRepository
 import it4it.backend.task.*
 import it4it.backend.task.link.LinkRepository
+import it4it.backend.task.link.LinkService
 import it4it.backend.task.link.LinkTypeRepository
+import it4it.backend.task.link.NewLink
 import it4it.backend.user.NewUser
 import it4it.backend.user.User
 import it4it.backend.user.role.*
@@ -70,6 +72,9 @@ class RestController() {
 
     @Autowired
     lateinit var requirementService: RequirementService
+
+    @Autowired
+    lateinit var linkService: LinkService
 
     @GetMapping("/project/all")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
@@ -355,6 +360,50 @@ class RestController() {
         return ResponseEntity.accepted().body(requirementService.getRequirements(task.get()))
     }
 
+    @GetMapping("/task/{taskId}/inwardLinks")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @ResponseBody
+    fun getInwardTaskLink(authentication: Authentication, @PathVariable taskId: Long): ResponseEntity<*> {
+        val user: User = userRepository.findByUsername(authentication.name).get()
+        val task = taskService.getTaskById(taskId)
+        return if (task.isPresent) {
+            ResponseEntity.accepted().body(linkService.getInwardLinks(task.get()))
+        }
+        else{
+            ResponseEntity(ResponseMessage("Task is not exist!"),HttpStatus.BAD_REQUEST)
+        }
+    }
+
+    @GetMapping("/task/{taskId}/outwardLinks")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @ResponseBody
+    fun getOutwardTaskLink(authentication: Authentication, @PathVariable taskId: Long): ResponseEntity<*> {
+        val user: User = userRepository.findByUsername(authentication.name).get()
+        val task = taskService.getTaskById(taskId)
+        return if (task.isPresent) {
+
+            ResponseEntity.accepted().body(linkService.getOutwardLinks(task.get()))
+        }
+        else{
+            ResponseEntity(ResponseMessage("Task is not exist!"),HttpStatus.BAD_REQUEST)
+        }
+    }
+
+    @PostMapping("/task/{taskId}/link")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @ResponseBody
+    fun newTaskLink(authentication: Authentication, @Valid @RequestBody newLink: NewLink, @PathVariable taskId: Long): ResponseEntity<*> {
+        val user: User = userRepository.findByUsername(authentication.name).get()
+        val task = taskService.getTaskById(taskId)
+        return if (task.isPresent) {
+            linkService.newLink(newLink.linkType!!,newLink.inward!!,newLink.outward!!)
+            ResponseEntity.accepted().body(requirementService.getRequirements(task.get()))
+        }
+        else{
+            ResponseEntity(ResponseMessage("Task is not exist!"),HttpStatus.BAD_REQUEST)
+        }
+    }
+
     @GetMapping("/user/all")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @ResponseBody
@@ -426,6 +475,14 @@ class RestController() {
             roleRepository.save(newRole)
         }
         return ResponseEntity.accepted().body(roleRepository.findAll())
+    }
+
+    @GetMapping("/links")
+    @PreAuthorize("hasRole('ADMIN')")
+    @ResponseBody
+    fun getLinks(authentication: Authentication): ResponseEntity<*> {
+        val user: User = userRepository.findByUsername(authentication.name).get()
+        return ResponseEntity.accepted().body(linkTypeRepository.findAll())
     }
 
     @GetMapping("/usercontent")
