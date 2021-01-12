@@ -136,12 +136,26 @@
               <b-form-checkbox id="checkbox-1" disabled v-model="infoModal.row.archived" name="checkbox-1" >Archived</b-form-checkbox>
               <div class="mt-2"></div>
             </div>
+            <div class="mt-2">Users</div>
             <b-table
                 show-empty
                 small
                 stacked="md"
                 :items="infoModal.users"
                 :fields="infoModal.fields"
+                :fixed=true
+                :sort-by.sync="sortBy"
+                :sort-desc.sync="sortDesc"
+                :sort-direction="sortDirection"
+            >
+            </b-table>
+            <div class="mt-2">Releases</div>
+            <b-table
+                show-empty
+                small
+                stacked="md"
+                :items="infoModal.release.items"
+                :fields="infoModal.release.fields"
                 :fixed=true
                 :sort-by.sync="sortBy"
                 :sort-desc.sync="sortDesc"
@@ -173,6 +187,46 @@
                 <b-form-input type="text" placeholder="Spec" v-model="infoModal.row.spec" />
                 <div class="mt-2"></div>
               </div>
+
+              <b-table
+                  show-empty
+                  small
+                  stacked="md"
+                  :items="infoModal.users"
+                  :fields="infoModal.fields"
+                  :fixed=true
+                  :sort-by.sync="sortBy"
+                  :sort-desc.sync="sortDesc"
+                  :sort-direction="sortDirection"
+              >
+                <template #cell(actions)="row">
+                  <b-button size="sm" @click="deleteUser(row.item.id)" class="mr-1" variant="danger">
+                    Delete
+                  </b-button>
+                </template>
+              </b-table>
+              <br>
+              <div class="mt-2">
+                <b-button v-b-modal.newReleaseModal v-on:click="fillNewReleaseModal()" size="sm">New Release</b-button>
+              </div>
+              <div class="mt-2">Releases</div>
+              <b-table
+                  show-empty
+                  small
+                  stacked="md"
+                  :items="infoModal.release.items"
+                  :fields="infoModal.release.fields"
+                  :fixed=true
+                  :sort-by.sync="sortBy"
+                  :sort-desc.sync="sortDesc"
+                  :sort-direction="sortDirection"
+              >
+                <template #cell(actions)="row">
+                  <b-button v-b-modal.editReleaseModal size="sm" @click="fillEditReleaseModal(row.item)" class="mr-1">
+                    Edit
+                  </b-button>
+                </template>
+              </b-table>
             </b-form>
         </div>
       </b-modal>
@@ -184,6 +238,51 @@
             <div class="mt-2"></div>
             <b-form-select placeholder="Role" v-model="userModal.role" :options="userModal.roles" />
             <div class="mt-2"></div>
+          </div>
+        </div>
+      </b-modal>
+
+      <b-modal id="editReleaseModal" :title="releaseModal.title" v-on:ok="editRelease()" v-on:cancel="resetReleaseModal" @hide="resetReleaseModal">
+        <div>
+          <div>
+            <b-form @submit="edit()" @reset="resetInfoModal()">
+              <div class="mt-2">Version</div>
+              <b-form-input type="text" placeholder="Version" v-model="releaseModal.version" required />
+
+              <div class="mt-2">Description</div>
+              <b-form-input type="text" placeholder="Description" v-model="releaseModal.description" />
+
+              <div class="mt-2">Released</div>
+              <b-form-checkbox id="checkbox-1" v-model="releaseModal.released" name="checkbox-1" >Released</b-form-checkbox>
+
+              <div class="mt-2">Specification</div>
+              <b-form-input type="text" placeholder="Specification" v-model="releaseModal.spec" />
+
+              <b-button type="submit" variant="primary" v-on:click="edit()">Ok</b-button>
+              <b-button type="reset" variant="danger">Reset</b-button>
+            </b-form>
+          </div>
+        </div>
+      </b-modal>
+
+      <b-modal id="newReleaseModal" :title="releaseModal.title" @hide="resetReleaseModal" hide-footer>
+        <div>
+          <div>
+            <b-form @submit="edit()" @reset="resetInfoModal()">
+              <div class="mt-2">Version</div>
+              <b-form-input type="text" placeholder="Version" v-model="releaseModal.version" required />
+
+              <div class="mt-2">Description</div>
+              <b-form-input type="text" placeholder="Description" v-model="releaseModal.description" />
+
+              <div class="mt-2">Released</div>
+              <b-form-checkbox id="checkbox-1" v-model="releaseModal.released" name="checkbox-1" >Released</b-form-checkbox>
+
+              <div class="mt-2">Specification</div>
+              <b-form-input type="text" placeholder="Specification" v-model="releaseModal.spec" />
+
+              <b-button variant="primary" v-on:click="newRelease()">Ok</b-button>
+            </b-form>
           </div>
         </div>
       </b-modal>
@@ -223,13 +322,31 @@ export default {
       deleteModal:{
         pid:null
       },
+      releaseModal:{
+        title:"Release",
+        item:null,
+        version:"",
+        description:"",
+        released:false,
+        spec:""
+      },
       infoModal: {
         id: 'info-modal',
         title: '',
         content: '',
+        item:'',
+        release:{
+          items:[],
+          fields:[
+            { key: 'version', label: 'Release version', sortable: true, sortDirection: 'asc'},
+            { key: 'released', label: 'Released', sortable: true },
+            { key: 'actions', label: 'Actions' }
+          ]
+        },
         fields: [
           { key: 'user', label: 'User', sortable: true, sortDirection: 'asc'},
-          { key: 'role', label: 'Role', sortable: true }
+          { key: 'role', label: 'Role', sortable: true },
+          { key: 'actions', label: 'Actions' }
         ],
         users:[],
         row:{
@@ -296,12 +413,95 @@ export default {
         setTimeout(this.loadUserContent, 1000)
       }
     },
+    deleteUser(assignedRoleId){
+      AXIOS.delete('/assignedRole/' + assignedRoleId)
+          .then(response => {
+            console.log(response.data)
+          })
+          .catch(error => {
+            console.log('ERROR: ' + error.response.message);
+          })
+      setTimeout(this.reloadUserList, 2000)
+    },
+    deleteRelease(releaseId){
+      AXIOS.delete('/release/' + releaseId)
+          .then(response => {
+            console.log(response.data)
+          })
+          .catch(error => {
+            console.log('ERROR: ' + error.response.message);
+          })
+
+      setTimeout(this.getReleases, 2000)
+    },
     setDeleteModal(taskId){
       this.deleteModal.taskId = taskId
       this.$bvModal.show('deleteObject')
     },
     resetDeleteModal(){
       this.deleteModal.pid = null
+    },
+    resetReleaseModal(){
+      this.releaseModal.spec = ""
+      this.releaseModal.version = ""
+      this.releaseModal.spec = ""
+      this.releaseModal.item = null
+      this.releaseModal.description = ""
+      this.releaseModal.title = ""
+      this.$bvModal.hide('newReleaseModal')
+      this.$bvModal.hide('editReleaseModal')
+    },
+    fillNewReleaseModal(){
+      this.releaseModal.title = "New Release"
+    },
+    fillEditReleaseModal(item){
+      this.releaseModal.title = "Edit release "+item.version
+      this.releaseModal.item = item
+      this.releaseModal.version = item.version
+      this.releaseModal.description = item.description
+      this.releaseModal.spec = item.spec
+      this.releaseModal.released = item.released
+    },
+    newRelease() {
+      const body = {
+        version: this.releaseModal.version,
+        description: this.releaseModal.description,
+        project: this.infoModal.item.id,
+        released: this.releaseModal.released,
+        spec: this.releaseModal.spec
+      };
+      console.log(body)
+      AXIOS.post('/project/'+this.infoModal.item.key+'/release', body)
+          .then(response => {
+            console.log(response)
+          })
+          .catch(error => {
+            console.log('ERROR: ' + error.response.data);
+          })
+      this.resetReleaseModal()
+    },
+    editRelease(){
+      if (this.releaseModal.version === '' || this.releaseModal.version == null) {
+        this.$data.alertMessage = 'Please, fill "Project Name" field';
+        this.showAlert()
+        this.infoModal.row.archived = true
+      } else {
+        const body = {
+          version: this.releaseModal.version,
+          description: this.releaseModal.description,
+          released: this.releaseModal.released,
+          spec: this.releaseModal.spec
+        };
+        AXIOS.put('/project/' + this.infoModal.item.key+'/release/'+this.releaseModal.item.id, body)
+            .then(response => {
+              console.log(response)
+              this.loadUserContent();
+            })
+            .catch(error => {
+              console.log('ERROR: ' + error.response);
+            })
+        this.resetReleaseModal()
+      }
     },
     archive(item,action) {
       const header = {'Authorization': 'Bearer ' + this.$store.getters.getToken};
@@ -323,13 +523,16 @@ export default {
           })
     },
     info(item) {
+      this.infoModal.users = []
+      this.infoModal.item = item
       AXIOS.get('/project/' + item.key + '/users')
           .then(response => {
             console.log(response.data)
             response.data.forEach(userObject =>{
               const user = {
                 user: userObject.user.name + " (" + userObject.user.username + ")",
-                role: userObject.role.name
+                role: userObject.role.name,
+                id: userObject.id
               }
               this.infoModal.users.push(user)
             })
@@ -344,6 +547,35 @@ export default {
       this.infoModal.row.description = item.description
       this.infoModal.row.spec = item.spec
       this.infoModal.row.archived = item.archived
+      this.getReleases()
+    },
+    getReleases(){
+      AXIOS.get('/project/' + this.infoModal.row.key + '/release/all')
+          .then(response => {
+            console.log(response.data)
+            this.infoModal.release.items = response.data
+          })
+          .catch(error => {
+            console.log('ERROR: ' + error.response);
+          })
+    },
+    reloadUserList(){
+      this.infoModal.users = []
+      AXIOS.get('/project/' + this.infoModal.item.key + '/users')
+          .then(response => {
+            console.log(response.data)
+            response.data.forEach(userObject =>{
+              const user = {
+                user: userObject.user.name + " (" + userObject.user.username + ")",
+                role: userObject.role.name,
+                id: userObject.id
+              }
+              this.infoModal.users.push(user)
+            })
+          })
+          .catch(error => {
+            console.log('ERROR: ' + error.response);
+          })
     },
     user(item) {
       this.userModal.users = []

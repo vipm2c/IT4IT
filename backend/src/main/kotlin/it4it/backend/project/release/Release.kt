@@ -12,18 +12,18 @@ class Release (
         val id: Long,
 
         @Column(nullable = true)
-        val version: String?,
+        var version: String?,
 
         @Column(nullable = true)
-        val description: String?,
+        var description: String?,
 
         @OneToOne(cascade = [CascadeType.ALL])
         @JoinColumn(name = "project", referencedColumnName = "id")
         val project: Project?,
 
         @Column(nullable = true)
-        val released: Boolean?,
+        var released: Boolean?,
 
         @Column(nullable = true)
-        val spec: String?
+        var spec: String?
 )

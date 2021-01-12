@@ -613,7 +613,7 @@ export default {
             response.data.forEach(object => {
               const item = {
                 value: object.id,
-                text: object.name
+                text: object.version
               };
               this.infoModal.releases.push(item)
             })

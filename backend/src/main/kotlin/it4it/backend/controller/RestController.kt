@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.*
 import it4it.backend.project.Project
 import it4it.backend.project.ProjectRepository
 import it4it.backend.project.ProjectService
+import it4it.backend.project.release.NewRelease
+import it4it.backend.project.release.Release
 import it4it.backend.project.release.ReleaseRepository
 import it4it.backend.project.release.ReleaseService
 import it4it.backend.repository.UserRepository
@@ -193,6 +195,50 @@ class RestController() {
         }
     }
 
+    @PostMapping("/project/{projectKey}/release")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @ResponseBody
+    fun newReleases(authentication: Authentication, @PathVariable projectKey: String, @Valid @RequestBody newRelease: NewRelease): ResponseEntity<*> {
+        val user: User = userRepository.findByUsername(authentication.name).get()
+        val projectCandidate = projectRepository.findProjectByKey(projectKey)
+        return if (projectCandidate.isPresent) {
+            val newObject = Release(
+                    0,
+                    newRelease.version,
+                    newRelease.description,
+                    projectCandidate.get(),
+                    newRelease.released,
+                    newRelease.spec
+            )
+            releaseRepository.save(newObject)
+            ResponseEntity.accepted().body(newObject)
+        }
+        else{
+            ResponseEntity(ResponseMessage("Project does not exist!"),HttpStatus.BAD_REQUEST)
+        }
+    }
+
+    @PutMapping("/project/{projectKey}/release/{releaseId}")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @ResponseBody
+    fun editReleases(authentication: Authentication, @PathVariable projectKey: String, @Valid @RequestBody newRelease: NewRelease, @PathVariable releaseId: Long): ResponseEntity<*> {
+        val user: User = userRepository.findByUsername(authentication.name).get()
+        val projectCandidate = projectRepository.findProjectByKey(projectKey)
+        val releaseCandidate = releaseRepository.findReleaseById(releaseId)
+        return if (projectCandidate.isPresent && releaseCandidate.isPresent) {
+            val release = releaseCandidate.get()
+            release.version = newRelease.version
+            release.description = newRelease.description
+            release.released = newRelease.released
+            release.spec = newRelease.spec
+            releaseRepository.save(release)
+            ResponseEntity.accepted().body(release)
+        }
+        else{
+            ResponseEntity(ResponseMessage("Project of Release does not exist!"),HttpStatus.BAD_REQUEST)
+        }
+    }
+
     @GetMapping("/project/{projectKey}/users")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @ResponseBody
@@ -254,6 +300,14 @@ class RestController() {
         else{
             ResponseEntity(ResponseMessage("Project,User or Role does not exists!"),HttpStatus.BAD_REQUEST)
         }
+    }
+
+    @DeleteMapping("/assignedRole/{roleId}")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @ResponseBody
+    fun deleteAssignedRole(authentication: Authentication, @PathVariable roleId: Long): ResponseEntity<*> {
+        val user: User = userRepository.findByUsername(authentication.name).get()
+        return ResponseEntity.accepted().body(assignedRoleRepository.deleteById(roleId))
     }
 
     @GetMapping("/status")
@@ -465,7 +519,7 @@ class RestController() {
     }
 
     @PostMapping("/role")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @ResponseBody
     fun newRoles(authentication: Authentication, @Valid @RequestBody newRole: Role): ResponseEntity<*> {
         val user: User = userRepository.findByUsername(authentication.name).get()
@@ -478,7 +532,7 @@ class RestController() {
     }
 
     @GetMapping("/links")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @ResponseBody
     fun getLinks(authentication: Authentication): ResponseEntity<*> {
         val user: User = userRepository.findByUsername(authentication.name).get()
@@ -486,11 +540,19 @@ class RestController() {
     }
 
     @DeleteMapping("/links/{linkId}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @ResponseBody
     fun deleteLink(authentication: Authentication, @PathVariable linkId: Long): ResponseEntity<*> {
         val user: User = userRepository.findByUsername(authentication.name).get()
         return ResponseEntity.accepted().body(linkService.deleteLink(linkId))
+    }
+
+    @DeleteMapping("/release/{releaseId}")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @ResponseBody
+    fun deleteRelease(authentication: Authentication, @PathVariable releaseId: Long): ResponseEntity<*> {
+        val user: User = userRepository.findByUsername(authentication.name).get()
+        return ResponseEntity.accepted().body(releaseRepository.deleteById(releaseId))
     }
 
     @GetMapping("/usercontent")

@@ -12,15 +12,15 @@ class AssignedRole (
         @GeneratedValue(strategy = GenerationType.AUTO)
         val id: Long,
 
-        @OneToOne(cascade = [CascadeType.ALL])
+        @OneToOne(cascade = [CascadeType.REFRESH])
         @JoinColumn(name = "role",referencedColumnName = "id")
         val role: Role,
 
-        @OneToOne(cascade = [CascadeType.ALL])
+        @OneToOne(cascade = [CascadeType.REFRESH])
         @JoinColumn(name = "users",referencedColumnName = "id")
         val user: User,
 
-        @OneToOne(cascade = [CascadeType.ALL])
+        @OneToOne(cascade = [CascadeType.REFRESH])
         @JoinColumn(name = "project",referencedColumnName = "id")
         val project: Project
 )
