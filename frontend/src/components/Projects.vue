@@ -242,7 +242,7 @@
         </div>
       </b-modal>
 
-      <b-modal id="editReleaseModal" :title="releaseModal.title" v-on:ok="editRelease()" v-on:cancel="resetReleaseModal" @hide="resetReleaseModal">
+      <b-modal id="editReleaseModal" :title="releaseModal.title" @hide="resetReleaseModal" hide-footer>
         <div>
           <div>
             <b-form @submit="edit()" @reset="resetInfoModal()">
@@ -258,8 +258,8 @@
               <div class="mt-2">Specification</div>
               <b-form-input type="text" placeholder="Specification" v-model="releaseModal.spec" />
 
-              <b-button type="submit" variant="primary" v-on:click="edit()">Ok</b-button>
-              <b-button type="reset" variant="danger">Reset</b-button>
+              <b-button variant="primary" v-on:click="editRelease()">Ok</b-button>
+              <b-button variant="danger" v-on:click="resetReleaseModal">Reset</b-button>
             </b-form>
           </div>
         </div>
@@ -479,6 +479,7 @@ export default {
             console.log('ERROR: ' + error.response.data);
           })
       this.resetReleaseModal()
+      setTimeout(this.getReleases, 1000)
     },
     editRelease(){
       if (this.releaseModal.version === '' || this.releaseModal.version == null) {
@@ -501,6 +502,7 @@ export default {
               console.log('ERROR: ' + error.response);
             })
         this.resetReleaseModal()
+        setTimeout(this.getReleases, 1000)
       }
     },
     archive(item,action) {
