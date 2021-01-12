@@ -485,6 +485,14 @@ class RestController() {
         return ResponseEntity.accepted().body(linkTypeRepository.findAll())
     }
 
+    @DeleteMapping("/links/{linkId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @ResponseBody
+    fun deleteLink(authentication: Authentication, @PathVariable linkId: Long): ResponseEntity<*> {
+        val user: User = userRepository.findByUsername(authentication.name).get()
+        return ResponseEntity.accepted().body(linkService.deleteLink(linkId))
+    }
+
     @GetMapping("/usercontent")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @ResponseBody

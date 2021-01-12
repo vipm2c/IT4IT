@@ -36,5 +36,8 @@ class LinkService {
         }
     }
 
+    fun deleteLink(linkId:Long){
+        linkRepository.deleteById(linkId)
+    }
 
 }

@@ -621,15 +621,15 @@ export default {
             console.log('ERROR: ' + error.response.data);
           })
     },
-    deleteLink(reqId){
-      AXIOS.delete('/task/'+this.infoModal.taskId+'/requirements/'+reqId)
+    deleteLink(linkId){
+      AXIOS.delete('/links/'+linkId)
           .then(response => {
-            console.log("Requirements: "+response.data)
-            this.infoModal.requirements.items = response.data
+            console.log(response)
           })
           .catch(error => {
             console.log('ERROR: ' + error.response.data);
           })
+      setTimeout(this.getLinkedTasks, 1000)
     },
     deleteTask(){
       if (this.deleteModal.taskId != null) {
