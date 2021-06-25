@@ -161,6 +161,9 @@
                 :sort-desc.sync="sortDesc"
                 :sort-direction="sortDirection"
             >
+              <template #cell(reqId)="row">
+                <a href="http://d164d1f8e9f4.ngrok.io/requirements/">{{ row.value }}</a>
+              </template>
             </b-table>
             <br>
             <b-table
